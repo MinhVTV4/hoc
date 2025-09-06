@@ -3,60 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LearnPath AI - (v13.4: Tùy chỉnh Trình độ)</title>
+    <title>LearnPath AI - (v14.3: Sửa lỗi hiển thị Text)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" xintegrity="sha384-n8MVd4RsNIU0KOVEMQNogNJeASiX9UrxmoL2ACafVVfk5TBccNsB6SbAtUWWl0ES" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" xintegrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" xintegrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+    <!-- New Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa; color: #212529; display: flex; flex-direction: column; align-items: center; }
+        :root {
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            
+            /* Light Theme */
+            --bg-primary-light: #f4f5f7;
+            --bg-secondary-light: #ffffff;
+            --bg-tertiary-light: #f9fafb;
+            --text-primary-light: #111827;
+            --text-secondary-light: #4b5563;
+            --border-light: #e5e7eb;
+            --primary-light: #2563eb;
+            --primary-hover-light: #1d4ed8;
+            --accent-light: #f97316;
+            --success-light: #16a34a;
+            --shadow-light: rgba(0, 0, 0, 0.06);
+
+            /* Dark Theme */
+            --bg-primary-dark: #111827;
+            --bg-secondary-dark: #1f2937;
+            --bg-tertiary-dark: #374151;
+            --text-primary-dark: #f9fafb;
+            --text-secondary-dark: #9ca3af;
+            --border-dark: #4b5563;
+            --primary-dark: #38bdf8;
+            --primary-hover-dark: #0ea5e9;
+            --accent-dark: #fb923c;
+            --success-dark: #4ade80;
+            --shadow-dark: rgba(0, 0, 0, 0.2);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: var(--bg-primary-light);
+            --bg-secondary: var(--bg-secondary-light);
+            --bg-tertiary: var(--bg-tertiary-light);
+            --text-primary: var(--text-primary-light);
+            --text-secondary: var(--text-secondary-light);
+            --border: var(--border-light);
+            --primary: var(--primary-light);
+            --primary-hover: var(--primary-hover-light);
+            --accent: var(--accent-light);
+            --success: var(--success-light);
+            --shadow: var(--shadow-light);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: var(--bg-primary-dark);
+            --bg-secondary: var(--bg-secondary-dark);
+            --bg-tertiary: var(--bg-tertiary-dark);
+            --text-primary: var(--text-primary-dark);
+            --text-secondary: var(--text-secondary-dark);
+            --border: var(--border-dark);
+            --primary: var(--primary-dark);
+            --primary-hover: var(--primary-hover-dark);
+            --accent: var(--accent-dark);
+            --success: var(--success-dark);
+            --shadow: var(--shadow-dark);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body { 
+            font-family: var(--font-main); 
+            margin: 0; 
+            padding: 20px; 
+            background-color: var(--bg-primary); 
+            color: var(--text-primary); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            transition: background-color 0.3s, color 0.3s;
+        }
         .container { width: 100%; max-width: 850px; }
-        h1, h2 { color: #0056b3; text-align: center; margin-bottom: 5px; }
-        h1 { font-size: 2.2rem; }
-        h2 { font-size: 1.2rem; font-weight: 400; margin-bottom: 30px;}
-        #controls { margin-bottom: 30px; background-color: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #dee2e6; }
-        input[type="text"], select { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 16px; background-color: #fff; }
-        input[type="text"]:focus, select:focus { border-color: #80bdff; outline: 0; box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); }
-        button { width: 100%; padding: 14px 25px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 17px; transition: background-color 0.3s ease, transform 0.1s ease; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; }
-        button:hover { background-color: #0056b3; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .header-title { display: flex; align-items: center; gap: 12px; }
+        .header-title span { font-size: 2.2rem; }
+        .header-actions { display: flex; align-items: center; }
+        #theme-toggle-btn {
+            background: none; border: 1px solid var(--border); color: var(--text-secondary);
+            width: 44px; height: 44px; padding: 0; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        }
+        #theme-toggle-btn:hover { background-color: var(--bg-tertiary); }
+        h1, h2 { text-align: center; margin-bottom: 5px; }
+        h1 { font-size: 2.2rem; color: var(--text-primary); }
+        h2 { font-size: 1.2rem; font-weight: 400; margin-bottom: 30px; color: var(--text-secondary); }
+        #controls { margin-bottom: 30px; background-color: var(--bg-secondary); padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px var(--shadow); border: 1px solid var(--border); transition: background-color 0.3s, border-color 0.3s; }
+        input[type="text"], select { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 16px; background-color: var(--bg-secondary); color: var(--text-primary); }
+        input[type="text"]:focus, select:focus { border-color: var(--primary); outline: 0; box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary) 25%, transparent); }
+        button { width: 100%; padding: 14px 25px; background-color: var(--primary); color: var(--bg-secondary); border: none; border-radius: 8px; cursor: pointer; font-size: 17px; transition: background-color 0.3s ease, transform 0.1s ease; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; }
+        button:hover { background-color: var(--primary-hover); }
         button:active { transform: scale(0.98); }
-        button:disabled { background-color: #a0c3e6; cursor: not-allowed; opacity: 0.9; }
-        #clearProgressButton { background-color: #6c757d; margin-top: 10px; }
-        #clearProgressButton:hover { background-color: #5a6268; }
-        #responseContainer { background-color: #fff; border-radius: 12px; min-height: 100px; width: 100%; padding: 15px; box-sizing: border-box; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #dee2e6; }
+        button:disabled { background-color: var(--text-secondary); cursor: not-allowed; opacity: 0.6; }
+        #clearProgressButton { background-color: var(--text-secondary); margin-top: 10px; color: var(--bg-secondary); }
+        #clearProgressButton:hover { opacity: 0.8; }
+        #responseContainer { background-color: var(--bg-secondary); border-radius: 16px; min-height: 100px; width: 100%; padding: 15px; box-sizing: border-box; box-shadow: 0 4px 20px var(--shadow); border: 1px solid var(--border); }
         .learning-path ol { list-style-type: none; padding-left: 0; margin: 0; counter-reset: lesson-counter; }
-        .learning-path li { background-color: #f8f9fa; margin-bottom: 10px; padding: 15px 20px 15px 50px; border-radius: 8px; border-left: 5px solid #6c757d; counter-increment: lesson-counter; position: relative; transition: all 0.3s ease; }
-        .learning-path li[data-state="locked"] { background-color: #e9ecef; border-left-color: #adb5bd; cursor: not-allowed; opacity: 0.7; }
-        .learning-path li[data-state="unlocked"] { border-left-color: #007bff; cursor: pointer; }
-        .learning-path li[data-state="unlocked"]:hover { background-color: #e2e6ea; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .learning-path li[data-state="completed"] { border-left-color: #28a745; background-color: #e6f7ec; cursor: pointer; }
-        .learning-path li::before { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background-color: #6c757d; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: monospace; font-size: 1.2rem; content: "🔒"; }
-        .learning-path li[data-state="unlocked"]::before { background-color: #007bff; content: counter(lesson-counter); }
-        .learning-path li[data-state="completed"]::before { background-color: #28a745; content: "✓"; }
-        .lesson-title { font-weight: 500; font-size: 1.05rem;}
-        .learning-path li.active { border-left-color: #fd7e14; }
-        .learning-path li.active::before { background-color: #fd7e14; }
-        .learning-path li[data-state="completed"].active { border-left-color: #198754; }
-        .learning-path li[data-state="completed"].active::before { background-color: #198754; }
-        .lesson-detail { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #dee2e6; }
+        .learning-path li { background-color: var(--bg-tertiary); margin-bottom: 10px; padding: 15px 20px 15px 55px; border-radius: 12px; border-left: 5px solid var(--text-secondary); counter-increment: lesson-counter; position: relative; transition: all 0.3s ease; }
+        .learning-path li[data-state="locked"] { background-color: color-mix(in srgb, var(--bg-tertiary) 50%, transparent); border-left-color: var(--text-secondary); cursor: not-allowed; opacity: 0.7; }
+        .learning-path li[data-state="unlocked"] { border-left-color: var(--primary); cursor: pointer; }
+        .learning-path li[data-state="unlocked"]:hover { background-color: color-mix(in srgb, var(--bg-primary) 50%, var(--bg-secondary) 50%); box-shadow: 0 2px 5px var(--shadow); }
+        .learning-path li[data-state="completed"] { border-left-color: var(--success); background-color: color-mix(in srgb, var(--success) 8%, var(--bg-secondary)); cursor: pointer; }
+        .learning-path li::before { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); background-color: var(--text-secondary); color: var(--bg-secondary); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: monospace; font-size: 1.2rem; content: "🔒"; }
+        .learning-path li[data-state="unlocked"]::before { background-color: var(--primary); content: counter(lesson-counter); }
+        .learning-path li[data-state="completed"]::before { background-color: var(--success); content: "✓"; }
+        .lesson-title { font-weight: 500; font-size: 1.05rem; color: var(--text-primary); }
+        .learning-path li.active { border-left-color: var(--accent); }
+        .learning-path li.active::before { background-color: var(--accent); }
+        .learning-path li[data-state="completed"].active { border-left-color: color-mix(in srgb, var(--success) 80%, black); }
+        .learning-path li[data-state="completed"].active::before { background-color: color-mix(in srgb, var(--success) 80%, black); }
+        .lesson-detail { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
         .learning-path li.active .lesson-detail { display: block; }
-        .lesson-block { background-color: #fff; border: 1px solid #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .lesson-block { background-color: var(--bg-secondary); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         .lesson-block-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .lesson-block.explanation { border-left: 4px solid #17a2b8; }
         .lesson-block.explanation .lesson-block-title { color: #17a2b8; }
-        .lesson-block.example { border-left: 4px solid #ffc107; background-color: #fffbeb; }
+        .lesson-block.example { border-left: 4px solid #ffc107; background-color: color-mix(in srgb, #ffc107 10%, var(--bg-secondary));}
         .lesson-block.example .lesson-block-title { color: #d39e00; }
-        .lesson-block.note { border-left: 4px solid #6f42c1; background-color: #f4f0ff; }
+        .lesson-block.note { border-left: 4px solid #6f42c1; background-color: color-mix(in srgb, #6f42c1 10%, var(--bg-secondary)); }
         .lesson-block.note .lesson-block-title { color: #6f42c1; }
         .summary-quiz-title { font-size: 1.3rem; font-weight: 600; color: #d63384; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .practice-set .quiz-container { margin-bottom: 15px; }
         .practice-set .quiz-container:last-child { margin-bottom: 0; }
-        .lesson-content { white-space: normal; word-wrap: break-word; line-height: 1.7; }
+        .lesson-content { white-space: normal; word-wrap: break-word; line-height: 1.7; color: var(--text-secondary); }
         .lesson-content p { margin-top: 0; margin-bottom: 1rem; }
         .lesson-content ul, .lesson-content ol { padding-left: 20px; }
         .lesson-content li { margin-bottom: 0.5rem; }
-        .lesson-content strong { color: #0056b3; }
-        .lesson-content code { background-color: #e9ecef; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+        .lesson-content strong { color: var(--text-primary); }
+        .lesson-content code { background-color: var(--bg-tertiary); padding: 2px 6px; border-radius: 6px; font-family: monospace; border: 1px solid var(--border); }
         .status-message { margin-top: 15px; font-weight: bold; font-size: 0.95rem; text-align: center; width: 100%; }
         .status-message.error-text { color: #dc3545; }
         .status-message.success-text { color: #28a745; }
@@ -64,43 +150,76 @@
         .spinner { border: 3px solid rgba(255, 255, 255, 0.3); border-left-color: #fff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; }
         button.loading .spinner { display: block; }
         .large-spinner, .small-spinner { border-radius: 50%; animation: spin 1.2s linear infinite; margin: auto; }
-        .large-spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #007bff;}
-        .small-spinner { width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #007bff;}
+        .large-spinner { width: 50px; height: 50px; border: 5px solid var(--bg-tertiary); border-top: 5px solid var(--primary);}
+        .small-spinner { width: 30px; height: 30px; border: 3px solid var(--bg-tertiary); border-top: 3px solid var(--primary);}
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
-        .quiz-container { background-color: #f0f7ff; border: 1px solid #b3d7ff; border-radius: 8px; padding: 20px; }
+        .quiz-container { background-color: color-mix(in srgb, var(--primary) 8%, var(--bg-secondary)); border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent); border-radius: 8px; padding: 20px; }
         .quiz-container p { margin-top: 0; font-weight: bold; }
-        .quiz-options button { display: block; width: 100%; text-align: left; margin-bottom: 10px; background-color: #fff; color: #333; border: 1px solid #ced4da; }
-        .quiz-options button:hover:not(:disabled) { background-color: #e9ecef; }
+        .quiz-options button { display: block; width: 100%; text-align: left; margin-bottom: 10px; background-color: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border); }
+        .quiz-options button:hover:not(:disabled) { background-color: var(--bg-tertiary); }
         .quiz-tf-options { display: flex; gap: 10px; }
         .quiz-tf-options button { flex: 1; text-align: center; }
         .quiz-container button.correct { background-color: #d4edda; border-color: #c3e6cb; color: #155724; font-weight: bold; }
         .quiz-container button.incorrect { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        [data-theme="dark"] .quiz-container button.correct { background-color: #1a3c2a; border-color: #2a6a4a; color: #8ce99a; }
+        [data-theme="dark"] .quiz-container button.incorrect { background-color: #4d1a21; border-color: #8b2a3a; color: #ffa8a8; }
         .quiz-feedback { margin-top: 15px; padding: 10px; border-radius: 6px; display: none; }
         .quiz-feedback.visible { display: block; }
         .quiz-feedback.correct { background-color: #d4edda; color: #155724; }
         .quiz-feedback.incorrect { background-color: #f8d7da; color: #721c24; }
-        .quiz-fib-input { padding: 8px; border: 1px solid #ced4da; border-radius: 4px; margin: 0 5px; }
+        [data-theme="dark"] .quiz-feedback.correct { background-color: #1a3c2a; color: #8ce99a; }
+        [data-theme="dark"] .quiz-feedback.incorrect { background-color: #4d1a21; color: #ffa8a8; }
+        .quiz-fib-input { padding: 8px; border: 1px solid var(--border); border-radius: 4px; margin: 0 5px; background-color: var(--bg-secondary); color: var(--text-primary);}
         .check-fib-btn { width: auto; font-size: 15px; padding: 8px 16px; margin-left: 10px; }
-        .retry-button { background-color: #6c757d; font-size: 14px; padding: 10px 20px; margin-top: 10px; width: auto; }
-        .retry-button:hover { background-color: #5a6268; }
+        .retry-button { background-color: var(--text-secondary); font-size: 14px; padding: 10px 20px; margin-top: 10px; width: auto; color: var(--bg-secondary); }
+        .retry-button:hover { opacity: 0.8; }
         .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5em 0; }
         .feedback-actions { margin-top: 12px; display: flex; gap: 10px; }
         .feedback-actions button { font-size: 14px; padding: 8px 12px; width: auto; }
         .reinforce-btn { background-color: #6f42c1; } .reinforce-btn:hover { background-color: #59369a; }
         .expand-btn { background-color: #17a2b8; } .expand-btn:hover { background-color: #138496; }
-        #welcomeMessage { display: none; background-color: #e7f3ff; border-left: 5px solid #007bff; border-radius: 8px; padding: 20px; margin-bottom: 25px; line-height: 1.6; }
+        #welcomeMessage { display: none; background-color: color-mix(in srgb, var(--primary) 15%, var(--bg-secondary)); border-left: 5px solid var(--primary); border-radius: 8px; padding: 20px; margin-bottom: 25px; line-height: 1.6; }
         #welcomeMessage p { margin: 0; }
         #welcomeMessage .small-spinner { margin: 0; display: inline-block; vertical-align: middle; margin-right: 10px;}
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
-        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 700px; border-radius: 12px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .modal-close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .modal-close:hover, .modal-close:focus { color: black; }
-        .modal-header { padding-bottom: 10px; border-bottom: 1px solid #eee; margin-bottom: 20px; }
-        .modal-header h3 { margin: 0; color: #0056b3; }
-        .modal-body { line-height: 1.7; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
+        .modal-content { background-color: var(--bg-secondary); margin: 10% auto; padding: 25px; border: 1px solid var(--border); width: 90%; max-width: 700px; border-radius: 12px; position: relative; box-shadow: 0 5px 15px var(--shadow); }
+        .modal-close { color: var(--text-secondary); float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .modal-close:hover, .modal-close:focus { color: var(--text-primary); }
+        .modal-header { padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        .modal-header h3 { margin: 0; color: var(--primary); }
+        .modal-body { line-height: 1.7; color: var(--text-secondary); }
         .modal-body .prose { max-width: none; }
         
+        #scrollToTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            border: none;
+            outline: none;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            padding: 0;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            visibility: hidden;
+        }
+        #scrollToTopBtn.visible {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: visible;
+            opacity: 1;
+        }
+
         @media (max-width: 768px) {
             body { padding: 10px; }
             h1 { font-size: 1.8rem; }
@@ -110,26 +229,37 @@
             .learning-path li::before { width: 26px; height: 26px; left: 8px; }
             .lesson-block, .quiz-container { padding: 15px; }
             .modal-content { width: 95%; margin: 5% auto; }
+            #scrollToTopBtn { bottom: 15px; right: 15px; width: 45px; height: 45px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>LearnPath AI 🚀</h1>
-        <h2>(v13.4: Tùy chỉnh Trình độ)</h2>
+        <div class="header">
+            <div class="header-title">
+                <span style="font-size: 2.2rem; color: var(--primary);">🎓</span>
+                <h1>LearnPath AI</h1>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle-btn" aria-label="Toggle dark mode">
+                    <span class="sun-icon">☀️</span>
+                    <span class="moon-icon" style="display: none;">🌙</span>
+                </button>
+            </div>
+        </div>
+        <h2>(v14.3: Sửa lỗi hiển thị Text)</h2>
 
         <div id="controls">
             <input type="text" id="topicInput" placeholder="Ví dụ: Định lý Pythagoras">
             
-            <label for="pathLengthSelect" style="display: block; margin-bottom: 8px; font-weight: 500; color: #495057; font-size: 15px;">Độ chi tiết của lộ trình:</label>
+            <label for="pathLengthSelect" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-secondary); font-size: 15px;">Độ chi tiết của lộ trình:</label>
             <select id="pathLengthSelect">
                 <option value="3 đến 4 bước">Tóm tắt (3-4 bước)</option>
                 <option value="5 đến 6 bước" selected>Tiêu chuẩn (5-6 bước)</option>
                 <option value="7 đến 9 bước">Chi tiết (7-9 bước)</option>
             </select>
             
-            <!-- NEW: Learner level selector -->
-            <label for="learnerLevelSelect" style="display: block; margin-bottom: 8px; font-weight: 500; color: #495057; font-size: 15px;">Trình độ người học:</label>
+            <label for="learnerLevelSelect" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-secondary); font-size: 15px;">Trình độ người học:</label>
             <select id="learnerLevelSelect">
                 <option value="người mới bắt đầu">Người mới bắt đầu</option>
                 <option value="người có kiến thức cơ bản" selected>Người có cơ bản</option>
@@ -161,12 +291,38 @@
             </div>
         </div>
     </div>
-
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
         import { getAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-ai.js";
         
         const LS_KEY = 'learningPathState';
+        const THEME_KEY = 'themePreference';
+
+        // --- Theme Management ---
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const sunIcon = themeToggleBtn.querySelector('.sun-icon');
+        const moonIcon = themeToggleBtn.querySelector('.moon-icon');
+        
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'inline-block';
+            } else {
+                sunIcon.style.display = 'inline-block';
+                moonIcon.style.display = 'none';
+            }
+        }
+        
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem(THEME_KEY, newTheme);
+            applyTheme(newTheme);
+        });
+
+        // --- Main App Logic ---
 
         function saveState() {
             const topic = topicInput.value.trim();
@@ -394,42 +550,38 @@
             if (!model) { detailElement.innerHTML = `<p class="error">Mô hình AI chưa sẵn sàng.</p>`; return; }
             detailElement.innerHTML = '<div class="small-spinner"></div>';
             
-            const prompt = `Bạn là một gia sư AI chuyên nghiệp, chuyên tạo nội dung giáo dục có cấu trúc. Hãy tạo một bài học hoàn chỉnh về chủ đề: "${topic}".
-            
-            **QUY TẮC BẮT BUỘC VỀ ĐỊNH DẠNG:**
-            1.  Đối với TẤT CẢ các chuỗi văn bản, bao gồm nội dung trong khối JSON và các tham số của 'tools' (như 'question', 'explanation'), mọi công thức toán học PHẢI dùng cú pháp KaTeX.
-            2.  Các dấu backslash đơn '\\' PHẢI được escape thành '\\\\'. Ví dụ: công thức $C = 2\\pi r$ phải được viết là "C = 2\\\\pi r" trong chuỗi.
-            
-            **YÊU CẦU PHẢN HỒI:**
-            Phản hồi của bạn PHẢI bao gồm 2 phần:
-            
-            1.  **Nội dung bài học:** Cung cấp phần này trong một khối mã JSON hợp lệ.
-            \`\`\`json
-            {
-              "lessonTitle": "...",
-              "introduction": "...",
-              "contentBlocks": [
-                { "type": "explanation", "title": "...", "content": "..." },
-                { "type": "example", "title": "...", "content": "..." }
-              ]
-            }
-            \`\`\`
-            
-            2.  **Bài tập thực hành:** Ngay sau khối JSON, hãy sử dụng các công cụ (tools) đã được cung cấp để tạo ra 2-3 câu hỏi ôn tập liên quan trực tiếp đến nội dung bài học.`;
-            
             try {
-                const result = await model.generateContent({
-                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                    tools: quizTools
-                });
+                // Call 1: Get lesson content as JSON
+                const lessonPrompt = `Bạn là một gia sư AI chuyên nghiệp. Hãy tạo nội dung bài học về chủ đề: "${topic}".
+                **QUY TẮC BẮT BUỘC:**
+                1. Mọi công thức toán học hoặc ký hiệu logic (ví dụ \\land, \\implies) PHẢI dùng cú pháp KaTeX và được bao bọc trong dấu đô la (ví dụ: $\\land$).
+                2. Escape dấu '\\' thành '\\\\'. Ví dụ: $\\pi$ phải được viết là "$\\\\pi$".
+                3. Chỉ trả lời bằng một khối mã JSON hợp lệ duy nhất.
+                \`\`\`json
+                {
+                  "lessonTitle": "...",
+                  "introduction": "...",
+                  "contentBlocks": [
+                    { "type": "explanation", "title": "...", "content": "..." },
+                    { "type": "example", "title": "...", "content": "..." }
+                  ]
+                }
+                \`\`\``;
 
-                const response = result.response;
-                const rawText = response.text();
+                const lessonResult = await model.generateContent(lessonPrompt);
+                const lessonData = parseAiJson(lessonResult.response.text());
+                if (!lessonData) throw new Error("Dữ liệu bài học từ AI không hợp lệ.");
                 
-                const lessonData = parseAiJson(rawText);
                 renderStructuredLesson(lessonData, detailElement);
 
-                const functionCalls = response.functionCalls();
+                // Call 2: Get quizzes using Function Calling
+                const quizPrompt = `Dựa vào chủ đề bài học "${topic}", hãy tạo 2-3 câu hỏi ôn tập bằng các công cụ được cung cấp. Đảm bảo mọi công thức hoặc ký hiệu toán học trong các tham số của công cụ (như question, explanation) đều tuân thủ quy tắc KaTeX.`;
+                const quizResult = await model.generateContent({
+                    contents: [{ role: 'user', parts: [{ text: quizPrompt }] }],
+                    tools: quizTools
+                });
+                
+                const functionCalls = quizResult.response.functionCalls();
                 if (functionCalls && functionCalls.length > 0) {
                     renderSummaryQuiz(functionCalls, detailElement);
                 }
@@ -447,7 +599,7 @@
             if (data.introduction) {
                 const introBlock = document.createElement('div');
                 introBlock.className = 'lesson-block explanation';
-                introBlock.innerHTML = `<div class="lesson-block-title">🧠 <span>${data.lessonTitle || 'Giới thiệu'}</span></div><div class="lesson-content">${marked.parse(data.introduction)}</div>`;
+                introBlock.innerHTML = `<div class="lesson-block-title">${getIconForBlockType('explanation')} <span>${data.lessonTitle || 'Giới thiệu'}</span></div><div class="lesson-content">${marked.parse(data.introduction)}</div>`;
                 parentElement.appendChild(introBlock);
             }
             if (data.contentBlocks && Array.isArray(data.contentBlocks)) {
@@ -462,7 +614,12 @@
         }
         
         function getIconForBlockType(type) {
-            switch(type) { case 'example': return `💡`; case 'note': return `📌`; case 'explanation': default: return `🧠`; }
+            const icons = {
+                example: '💡',
+                note: '📌',
+                explanation: '🧠'
+            };
+            return icons[type] || icons['explanation'];
         }
 
         function renderSummaryQuiz(functionCalls, parentElement) {
@@ -494,7 +651,6 @@
              const pathLengthSelect = document.getElementById('pathLengthSelect');
              const pathLength = pathLengthSelect.value;
              
-             // NEW: Get selected learner level
              const learnerLevelSelect = document.getElementById('learnerLevelSelect');
              const learnerLevel = learnerLevelSelect.value;
 
@@ -502,7 +658,6 @@
              responseContainer.innerHTML = '<div class="large-spinner"></div>';
              toggleButtonLoading(true);
 
-             // NEW: Update prompt with both length and level
              const prompt = `Tạo một lộ trình học gồm ${pathLength} rõ ràng và tuần tự cho chủ đề: "${topic}", phù hợp với trình độ của một "${learnerLevel}". Chỉ trả lời bằng một đối tượng JSON hợp lệ duy nhất, không có văn bản nào khác. Cấu trúc: {"learningPath": ["Bước 1: Giới thiệu...", "Bước 2: Tìm hiểu sâu...", ...]}`;
              
              try {
@@ -526,7 +681,7 @@
             showTutorModal("Củng cố kiến thức", '<div class="small-spinner"></div>');
             const questionText = questionArgs.question || questionArgs.statement;
             const correctAnswer = questionArgs.correctAnswer || (questionArgs.options ? questionArgs.options[questionArgs.correctAnswerIndex] : 'N/A');
-            const prompt = `Bạn là một gia sư AI tận tình. Một học sinh vừa trả lời SAI một câu hỏi. Hãy cung cấp một bài học ngắn gọn (bằng tiếng Việt, dùng Markdown) để giúp họ hiểu rõ lỗi sai và củng cố kiến thức.
+            const prompt = `Bạn là một gia sư AI tận tình. Một học sinh vừa trả lời SAI một câu hỏi. Hãy cung cấp một bài học ngắn gọn (bằng tiếng Việt, dùng Markdown) để giúp họ hiểu rõ lỗi sai và củng cố kiến thức. Đảm bảo mọi công thức/ký hiệu toán học đều dùng KaTeX và được bao bọc trong dấu đô la.
             - **Câu hỏi:** "${questionText}"
             - **Câu trả lời sai của học sinh:** "${userAnswer}"
             - **Đáp án đúng:** "${correctAnswer}"
@@ -545,13 +700,12 @@
             showTutorModal("Mở rộng kiến thức", '<div class="small-spinner"></div>');
             const questionText = questionArgs.question || questionArgs.statement;
             const prompt = `Bạn là một gia sư AI thân thiện. Một học sinh vừa trả lời ĐÚNG câu hỏi sau: "${questionText}". 
-            Hãy khen ngợi họ và cung cấp một mẩu kiến thức mở rộng ngắn gọn (bằng tiếng Việt, dùng Markdown) để giúp họ hiểu sâu hơn về chủ đề liên quan hoặc một ứng dụng thú vị của kiến thức đó.`;
+            Hãy khen ngợi họ và cung cấp một mẩu kiến thức mở rộng ngắn gọn (bằng tiếng Việt, dùng Markdown) để giúp họ hiểu sâu hơn về chủ đề liên quan hoặc một ứng dụng thú vị của kiến thức đó. Đảm bảo mọi công thức/ký hiệu toán học đều dùng KaTeX và được bao bọc trong dấu đô la.`;
             try {
                 const result = await model.generateContent(prompt);
                 showTutorModal("Mở rộng kiến thức", marked.parse(result.response.text()));
             } catch(e) { showTutorModal("Lỗi", "Không thể kết nối với AI để tạo bài học."); }
         }
-
 
         responseContainer.addEventListener('click', async (event) => {
             const li = event.target.closest('li');
@@ -563,6 +717,8 @@
             responseContainer.querySelectorAll('li').forEach(item => item.classList.remove('active'));
             if (!wasActive) {
                 li.classList.add('active');
+                li.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
                 const detailEl = li.querySelector('.lesson-detail');
                 if (detailEl && detailEl.innerHTML === '') {
                     await getLessonDetail(li.dataset.topic, detailEl);
@@ -644,7 +800,32 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', loadState);
+        const scrollToTopBtn = document.createElement('button');
+        scrollToTopBtn.id = 'scrollToTopBtn';
+        scrollToTopBtn.title = 'Lên đầu trang';
+        scrollToTopBtn.innerHTML = '⬆️';
+        document.body.appendChild(scrollToTopBtn);
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+            applyTheme(savedTheme);
+            loadState();
+        });
 
     </script>
 </body>
