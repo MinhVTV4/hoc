@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LearnPath AI - (v12: Lưu tiến trình)</title>
+    <title>LearnPath AI - (v13.4: Tùy chỉnh Trình độ)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" xintegrity="sha384-n8MVd4RsNIU0KOVEMQNogNJeASiX9UrxmoL2ACafVVfk5TBccNsB6SbAtUWWl0ES" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" xintegrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
@@ -15,8 +15,8 @@
         h1 { font-size: 2.2rem; }
         h2 { font-size: 1.2rem; font-weight: 400; margin-bottom: 30px;}
         #controls { margin-bottom: 30px; background-color: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #dee2e6; }
-        input[type="text"] { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        input[type="text"]:focus { border-color: #80bdff; outline: 0; box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); }
+        input[type="text"], select { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 16px; background-color: #fff; }
+        input[type="text"]:focus, select:focus { border-color: #80bdff; outline: 0; box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); }
         button { width: 100%; padding: 14px 25px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 17px; transition: background-color 0.3s ease, transform 0.1s ease; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; }
         button:hover { background-color: #0056b3; }
         button:active { transform: scale(0.98); }
@@ -85,18 +85,57 @@
         .retry-button { background-color: #6c757d; font-size: 14px; padding: 10px 20px; margin-top: 10px; width: auto; }
         .retry-button:hover { background-color: #5a6268; }
         .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5em 0; }
+        .feedback-actions { margin-top: 12px; display: flex; gap: 10px; }
+        .feedback-actions button { font-size: 14px; padding: 8px 12px; width: auto; }
+        .reinforce-btn { background-color: #6f42c1; } .reinforce-btn:hover { background-color: #59369a; }
+        .expand-btn { background-color: #17a2b8; } .expand-btn:hover { background-color: #138496; }
         #welcomeMessage { display: none; background-color: #e7f3ff; border-left: 5px solid #007bff; border-radius: 8px; padding: 20px; margin-bottom: 25px; line-height: 1.6; }
         #welcomeMessage p { margin: 0; }
         #welcomeMessage .small-spinner { margin: 0; display: inline-block; vertical-align: middle; margin-right: 10px;}
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 700px; border-radius: 12px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .modal-close:hover, .modal-close:focus { color: black; }
+        .modal-header { padding-bottom: 10px; border-bottom: 1px solid #eee; margin-bottom: 20px; }
+        .modal-header h3 { margin: 0; color: #0056b3; }
+        .modal-body { line-height: 1.7; }
+        .modal-body .prose { max-width: none; }
+        
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.1rem; margin-bottom: 20px; }
+            #controls, #responseContainer { padding: 15px; }
+            .learning-path li { padding: 12px 15px 12px 45px; }
+            .learning-path li::before { width: 26px; height: 26px; left: 8px; }
+            .lesson-block, .quiz-container { padding: 15px; }
+            .modal-content { width: 95%; margin: 5% auto; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>LearnPath AI 🚀</h1>
-        <h2>(v12: Lưu tiến trình)</h2>
+        <h2>(v13.4: Tùy chỉnh Trình độ)</h2>
 
         <div id="controls">
             <input type="text" id="topicInput" placeholder="Ví dụ: Định lý Pythagoras">
+            
+            <label for="pathLengthSelect" style="display: block; margin-bottom: 8px; font-weight: 500; color: #495057; font-size: 15px;">Độ chi tiết của lộ trình:</label>
+            <select id="pathLengthSelect">
+                <option value="3 đến 4 bước">Tóm tắt (3-4 bước)</option>
+                <option value="5 đến 6 bước" selected>Tiêu chuẩn (5-6 bước)</option>
+                <option value="7 đến 9 bước">Chi tiết (7-9 bước)</option>
+            </select>
+            
+            <!-- NEW: Learner level selector -->
+            <label for="learnerLevelSelect" style="display: block; margin-bottom: 8px; font-weight: 500; color: #495057; font-size: 15px;">Trình độ người học:</label>
+            <select id="learnerLevelSelect">
+                <option value="người mới bắt đầu">Người mới bắt đầu</option>
+                <option value="người có kiến thức cơ bản" selected>Người có cơ bản</option>
+                <option value="người muốn tìm hiểu nâng cao">Nâng cao</option>
+            </select>
+
             <button id="generatePathButton">
                 <span class="button-text">Tạo Lộ trình</span>
                 <div class="spinner"></div>
@@ -109,6 +148,18 @@
 
         <h2>Lộ trình học đề xuất:</h2>
         <div id="responseContainer">Chưa có lộ trình nào được tạo...</div>
+    </div>
+    
+    <div id="aiTutorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-close">&times;</span>
+                <h3 id="aiTutorModalTitle">Trợ lý AI</h3>
+            </div>
+            <div id="aiTutorModalBody" class="modal-body">
+                <p>Nội dung sẽ được tải ở đây...</p>
+            </div>
+        </div>
     </div>
 
     <script type="module">
@@ -135,7 +186,7 @@
             if (nextLi && nextLi.dataset.state === 'locked') {
                 nextLi.dataset.state = 'unlocked';
             }
-            saveState(); // Lưu sau khi hoàn thành
+            saveState(); 
         }
         
         function renderKatexInElement(element) {
@@ -146,20 +197,58 @@
                 });
             }
         }
+        
+        const aiTutorModal = document.getElementById('aiTutorModal');
+        const aiTutorModalTitle = document.getElementById('aiTutorModalTitle');
+        const aiTutorModalBody = document.getElementById('aiTutorModalBody');
+        const modalCloseBtn = aiTutorModal.querySelector('.modal-close');
+
+        function showTutorModal(title, content) {
+            aiTutorModalTitle.textContent = title;
+            aiTutorModalBody.innerHTML = content;
+            aiTutorModal.style.display = 'block';
+            renderKatexInElement(aiTutorModalBody);
+        }
+        
+        function hideTutorModal() {
+            aiTutorModal.style.display = 'none';
+        }
+        modalCloseBtn.onclick = hideTutorModal;
+        window.onclick = (event) => {
+            if (event.target == aiTutorModal) {
+                hideTutorModal();
+            }
+        }
 
         const toolImplementations = {
             createMultipleChoiceQuiz(args, container) {
                 const { question, options, correctAnswerIndex, explanation } = args;
                 if (!container) return;
+                container.dataset.quizType = 'createMultipleChoiceQuiz';
+                container.dataset.quizArgs = JSON.stringify(args);
+                
                 container.innerHTML = `<p>${question}</p><div class="quiz-options">${options.map((o, i) => `<button data-index="${i}">${o}</button>`).join('')}</div><div class="quiz-feedback"></div>`;
                 renderKatexInElement(container);
                 container.querySelector('.quiz-options').addEventListener('click', e => {
                     const btn = e.target.closest('button');
                     if (!btn || btn.parentElement.querySelector(':disabled')) return;
+                    
                     const selected = parseInt(btn.dataset.index);
                     const isCorrect = selected === correctAnswerIndex;
                     const feedbackEl = container.querySelector('.quiz-feedback');
-                    feedbackEl.textContent = explanation;
+                    
+                    let feedbackHTML = `<p>${explanation}</p><div class="feedback-actions"></div>`;
+                    feedbackEl.innerHTML = feedbackHTML;
+
+                    const actionsContainer = feedbackEl.querySelector('.feedback-actions');
+                    if (isCorrect) {
+                        actionsContainer.innerHTML = `<button class="expand-btn">Mở rộng kiến thức ✨</button>`;
+                        actionsContainer.querySelector('.expand-btn').onclick = () => requestExpansion(args);
+                    } else {
+                        actionsContainer.innerHTML = `<button class="reinforce-btn">Củng cố kiến thức 🤔</button>`;
+                        actionsContainer.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, options[selected]);
+                    }
+                    
                     feedbackEl.className = `quiz-feedback visible ${isCorrect ? 'correct' : 'incorrect'}`;
                     renderKatexInElement(feedbackEl);
                     container.querySelectorAll('button').forEach(b => {
@@ -173,15 +262,31 @@
             createFillInTheBlankQuiz(args, container) {
                 const { sentence, correctAnswer, explanation } = args;
                 if (!container) return;
+                container.dataset.quizType = 'createFillInTheBlankQuiz';
+                container.dataset.quizArgs = JSON.stringify(args);
+
                 container.innerHTML = `<p>${sentence.replace("___", `<input type="text" class="quiz-fib-input" placeholder="...">`)}</p><button class="check-fib-btn">Kiểm tra</button><div class="quiz-feedback"></div>`;
                 renderKatexInElement(container);
                 container.querySelector('.check-fib-btn').addEventListener('click', () => {
                     const input = container.querySelector('input');
-                    const isCorrect = input.value.trim().toLowerCase() === correctAnswer.toLowerCase();
+                    const userAnswer = input.value.trim();
+                    const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
                     const feedbackEl = container.querySelector('.quiz-feedback');
+                    
                     input.disabled = true;
                     container.querySelector('.check-fib-btn').disabled = true;
-                    feedbackEl.innerHTML = `<strong>Giải thích:</strong> ${explanation}`;
+                    
+                    let feedbackHTML = `<p><strong>Giải thích:</strong> ${explanation}</p><div class="feedback-actions"></div>`;
+                    feedbackEl.innerHTML = feedbackHTML;
+                    const actionsContainer = feedbackEl.querySelector('.feedback-actions');
+                    if(isCorrect) {
+                         actionsContainer.innerHTML = `<button class="expand-btn">Mở rộng kiến thức ✨</button>`;
+                         actionsContainer.querySelector('.expand-btn').onclick = () => requestExpansion(args);
+                    } else {
+                        actionsContainer.innerHTML = `<button class="reinforce-btn">Củng cố kiến thức 🤔</button>`;
+                        actionsContainer.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, userAnswer);
+                    }
+                    
                     renderKatexInElement(feedbackEl);
                     feedbackEl.className = `quiz-feedback visible ${isCorrect ? 'correct' : 'incorrect'}`;
                     input.classList.add(isCorrect ? 'correct' : 'incorrect');
@@ -192,15 +297,30 @@
             createTrueFalseQuiz(args, container) {
                 const { statement, isCorrect, explanation } = args;
                 if (!container) return;
+                container.dataset.quizType = 'createTrueFalseQuiz';
+                container.dataset.quizArgs = JSON.stringify(args);
+
                 container.innerHTML = `<p>${statement}</p><div class="quiz-tf-options"><button data-answer="true">Đúng</button><button data-answer="false">Sai</button></div><div class="quiz-feedback"></div>`;
                 renderKatexInElement(container);
                 container.querySelector('.quiz-tf-options').addEventListener('click', e => {
                     const btn = e.target.closest('button');
                     if (!btn || btn.parentElement.querySelector(':disabled')) return;
+                    
                     const answer = btn.dataset.answer === 'true';
                     const isCorrectAnswer = answer === isCorrect;
                     const feedbackEl = container.querySelector('.quiz-feedback');
-                    feedbackEl.textContent = explanation;
+                    
+                    let feedbackHTML = `<p>${explanation}</p><div class="feedback-actions"></div>`;
+                    feedbackEl.innerHTML = feedbackHTML;
+                    const actionsContainer = feedbackEl.querySelector('.feedback-actions');
+                     if(isCorrectAnswer) {
+                         actionsContainer.innerHTML = `<button class="expand-btn">Mở rộng kiến thức ✨</button>`;
+                         actionsContainer.querySelector('.expand-btn').onclick = () => requestExpansion(args);
+                    } else {
+                        actionsContainer.innerHTML = `<button class="reinforce-btn">Củng cố kiến thức 🤔</button>`;
+                        actionsContainer.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, answer ? 'Đúng' : 'Sai');
+                    }
+                    
                     renderKatexInElement(feedbackEl);
                     feedbackEl.className = `quiz-feedback visible ${isCorrectAnswer ? 'correct' : 'incorrect'}`;
                     container.querySelectorAll('button').forEach(b => {
@@ -252,6 +372,14 @@
                 }
             }
         }
+        
+        const quizTools = [{ 
+            functionDeclarations: [
+                { name: 'createMultipleChoiceQuiz', description: 'Tạo một câu hỏi trắc nghiệm.', parameters: { type: 'OBJECT', properties: { question: { type: 'STRING' }, options: { type: 'ARRAY', items: { type: 'STRING' } }, correctAnswerIndex: { type: 'NUMBER' }, explanation: { type: 'STRING', description: 'Giải thích ngắn gọn tại sao đáp án lại đúng.' } }, required: ['question', 'options', 'correctAnswerIndex', 'explanation'] } },
+                { name: 'createFillInTheBlankQuiz', description: 'Tạo một câu hỏi điền vào chỗ trống.', parameters: { type: 'OBJECT', properties: { sentence: { type: 'STRING', description: 'Câu chứa ký hiệu ___ cho chỗ trống.' }, correctAnswer: { type: 'STRING' }, explanation: { type: 'STRING', description: 'Giải thích ngắn gọn tại sao đáp án lại đúng.' } }, required: ['sentence', 'correctAnswer', 'explanation'] } },
+                { name: 'createTrueFalseQuiz', description: 'Tạo một câu hỏi dạng Đúng hoặc Sai.', parameters: { type: 'OBJECT', properties: { statement: { type: 'STRING' }, isCorrect: { type: 'BOOLEAN' }, explanation: { type: 'STRING', description: 'Giải thích ngắn gọn tại sao đáp án lại đúng.' } }, required: ['statement', 'isCorrect', 'explanation'] } }
+            ]
+        }];
 
         let model;
         try {
@@ -266,14 +394,47 @@
             if (!model) { detailElement.innerHTML = `<p class="error">Mô hình AI chưa sẵn sàng.</p>`; return; }
             detailElement.innerHTML = '<div class="small-spinner"></div>';
             
-            const prompt = `Bạn là một gia sư AI chuyên nghiệp, chuyên tạo nội dung giáo dục có chứa công thức toán học. Hãy tạo một bài học hoàn chỉnh về chủ đề: "${topic}". Chỉ trả lời bằng một đối tượng JSON hợp lệ duy nhất. YÊU CẦU CỰC KỲ QUAN TRỌNG VỀ JSON: 1.  Đây là quy tắc quan trọng nhất: Mọi ký tự backslash "\\" trong các chuỗi JSON phải được escape đúng cách. Ví dụ, để viết công thức LaTeX "\\frac{a}{b}", bạn PHẢI viết nó thành "\\\\frac{a}{b}" trong chuỗi JSON. 2.  Sử dụng cú pháp KaTeX cho tất cả các công thức toán học. Inline math dùng $, display math dùng $$. 3.  Nội dung trong trường "content" phải là văn bản định dạng Markdown. 4.  Đảm bảo toàn bộ phản hồi là một khối JSON hợp lệ, không có văn bản nào khác bao quanh. Cấu trúc JSON phải như sau: { "lessonTitle": "...", "introduction": "...", "contentBlocks": [ { "type": "explanation", "title": "...", "content": "..." }, { "type": "example", "title": "Ví dụ về công thức...", "content": "Công thức tính diện tích hình tròn là $A = \\\\pi r^2$. Một ví dụ khác là phương trình bậc hai: $$x = \\\\frac{-b \\\\pm \\\\sqrt{b^2-4ac}}{2a}$$" }, { "type": "note", "title": "...", "content": "..." } ], "practiceSet": { "exercises": [ { "type": "createMultipleChoiceQuiz", "details": { "question": "...", "options": [...], "correctAnswerIndex": ..., "explanation": "..." }}, { "type": "createTrueFalseQuiz", "details": { "statement": "...", "isCorrect": ..., "explanation": "..." }} ] } }`;
+            const prompt = `Bạn là một gia sư AI chuyên nghiệp, chuyên tạo nội dung giáo dục có cấu trúc. Hãy tạo một bài học hoàn chỉnh về chủ đề: "${topic}".
+            
+            **QUY TẮC BẮT BUỘC VỀ ĐỊNH DẠNG:**
+            1.  Đối với TẤT CẢ các chuỗi văn bản, bao gồm nội dung trong khối JSON và các tham số của 'tools' (như 'question', 'explanation'), mọi công thức toán học PHẢI dùng cú pháp KaTeX.
+            2.  Các dấu backslash đơn '\\' PHẢI được escape thành '\\\\'. Ví dụ: công thức $C = 2\\pi r$ phải được viết là "C = 2\\\\pi r" trong chuỗi.
+            
+            **YÊU CẦU PHẢN HỒI:**
+            Phản hồi của bạn PHẢI bao gồm 2 phần:
+            
+            1.  **Nội dung bài học:** Cung cấp phần này trong một khối mã JSON hợp lệ.
+            \`\`\`json
+            {
+              "lessonTitle": "...",
+              "introduction": "...",
+              "contentBlocks": [
+                { "type": "explanation", "title": "...", "content": "..." },
+                { "type": "example", "title": "...", "content": "..." }
+              ]
+            }
+            \`\`\`
+            
+            2.  **Bài tập thực hành:** Ngay sau khối JSON, hãy sử dụng các công cụ (tools) đã được cung cấp để tạo ra 2-3 câu hỏi ôn tập liên quan trực tiếp đến nội dung bài học.`;
             
             try {
-                const result = await model.generateContent(prompt);
-                const rawText = result.response.text();
+                const result = await model.generateContent({
+                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                    tools: quizTools
+                });
+
+                const response = result.response;
+                const rawText = response.text();
+                
                 const lessonData = parseAiJson(rawText);
                 renderStructuredLesson(lessonData, detailElement);
-                saveState(); // Lưu sau khi tải chi tiết bài học thành công
+
+                const functionCalls = response.functionCalls();
+                if (functionCalls && functionCalls.length > 0) {
+                    renderSummaryQuiz(functionCalls, detailElement);
+                }
+                
+                saveState();
             } catch (error) {
                 console.error("Lỗi khi lấy chi tiết bài học:", error);
                 detailElement.innerHTML = `<p class="status-message error-text">Không thể tải nội dung. Vấn đề có thể do dữ liệu từ AI không hợp lệ. Vui lòng thử lại.</p><button class="retry-button">Thử lại</button>`;
@@ -286,7 +447,7 @@
             if (data.introduction) {
                 const introBlock = document.createElement('div');
                 introBlock.className = 'lesson-block explanation';
-                introBlock.innerHTML = `<div class="lesson-block-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><span>${data.lessonTitle || 'Giới thiệu'}</span></div><div class="lesson-content">${marked.parse(data.introduction)}</div>`;
+                introBlock.innerHTML = `<div class="lesson-block-title">🧠 <span>${data.lessonTitle || 'Giới thiệu'}</span></div><div class="lesson-content">${marked.parse(data.introduction)}</div>`;
                 parentElement.appendChild(introBlock);
             }
             if (data.contentBlocks && Array.isArray(data.contentBlocks)) {
@@ -298,26 +459,29 @@
                 });
             }
             renderKatexInElement(parentElement);
-            if (data.practiceSet && data.practiceSet.exercises) {
-                renderSummaryQuiz(data.practiceSet, parentElement);
-            }
         }
         
         function getIconForBlockType(type) {
             switch(type) { case 'example': return `💡`; case 'note': return `📌`; case 'explanation': default: return `🧠`; }
         }
 
-        function renderSummaryQuiz(practiceSetData, parentElement) {
+        function renderSummaryQuiz(functionCalls, parentElement) {
             const block = document.createElement('div');
             block.className = 'practice-set';
-            block.innerHTML = `<div class="summary-quiz-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg><span>Bài tập tổng kết</span></div>`;
+            block.innerHTML = `<div class="summary-quiz-title">📝 <span>Bài tập tổng kết</span></div>`;
             parentElement.appendChild(block);
-            practiceSetData.exercises.forEach(exercise => {
+
+            functionCalls.forEach(call => {
                 const exerciseContainer = document.createElement('div');
                 exerciseContainer.className = 'quiz-container';
                 block.appendChild(exerciseContainer);
-                if (toolImplementations[exercise.type]) {
-                    toolImplementations[exercise.type](exercise.details, exerciseContainer);
+                
+                const implementation = toolImplementations[call.name];
+                if (implementation) {
+                    implementation(call.args, exerciseContainer);
+                } else {
+                    console.warn(`Không tìm thấy hàm triển khai cho công cụ: ${call.name}`);
+                    exerciseContainer.textContent = `Lỗi: Không thể hiển thị bài tập loại "${call.name}".`;
                 }
             });
         }
@@ -326,10 +490,21 @@
              if (!model) { updateStatus('error-text', "Mô hình AI chưa được khởi tạo."); return; }
              const topic = topicInput.value.trim();
              if (!topic) { updateStatus('error-text', "Vui lòng nhập một chủ đề!"); return; }
+
+             const pathLengthSelect = document.getElementById('pathLengthSelect');
+             const pathLength = pathLengthSelect.value;
+             
+             // NEW: Get selected learner level
+             const learnerLevelSelect = document.getElementById('learnerLevelSelect');
+             const learnerLevel = learnerLevelSelect.value;
+
              updateStatus('info-text', `Đang tạo lộ trình...`);
              responseContainer.innerHTML = '<div class="large-spinner"></div>';
              toggleButtonLoading(true);
-             const prompt = `Tạo một lộ trình học 5 bước cho chủ đề: "${topic}". Trả lời bằng JSON hợp lệ: {"learningPath": ["Bước 1", "Bước 2", ...]}`;
+
+             // NEW: Update prompt with both length and level
+             const prompt = `Tạo một lộ trình học gồm ${pathLength} rõ ràng và tuần tự cho chủ đề: "${topic}", phù hợp với trình độ của một "${learnerLevel}". Chỉ trả lời bằng một đối tượng JSON hợp lệ duy nhất, không có văn bản nào khác. Cấu trúc: {"learningPath": ["Bước 1: Giới thiệu...", "Bước 2: Tìm hiểu sâu...", ...]}`;
+             
              try {
                 const result = await model.generateContent(prompt);
                 const pathData = parseAiJson(result.response.text());
@@ -337,7 +512,7 @@
                 if (!Array.isArray(pathItems) || pathItems.length === 0) throw new Error("Invalid path data");
                 responseContainer.innerHTML = `<div class="learning-path"><ol>${pathItems.map((item, index) => `<li data-topic="${item.replace(/"/g, '&quot;')}" data-state="${index === 0 ? 'unlocked' : 'locked'}"><span class="lesson-title">${item}</span><div class="lesson-detail"></div></li>`).join('')}</ol></div>`;
                 updateStatus('success-text', "Đã tạo lộ trình! Nhấp vào mục đầu tiên để bắt đầu.");
-                saveState(); // Lưu sau khi tạo lộ trình thành công
+                saveState();
              } catch (error) {
                 console.error("Lỗi khi tạo lộ trình:", error);
                 responseContainer.innerHTML = `<p class="status-message error-text">Không thể tạo lộ trình. Vui lòng thử lại.</p>`;
@@ -346,12 +521,44 @@
                 toggleButtonLoading(false);
              }
         }
+        
+        async function requestReinforcement(questionArgs, userAnswer) {
+            showTutorModal("Củng cố kiến thức", '<div class="small-spinner"></div>');
+            const questionText = questionArgs.question || questionArgs.statement;
+            const correctAnswer = questionArgs.correctAnswer || (questionArgs.options ? questionArgs.options[questionArgs.correctAnswerIndex] : 'N/A');
+            const prompt = `Bạn là một gia sư AI tận tình. Một học sinh vừa trả lời SAI một câu hỏi. Hãy cung cấp một bài học ngắn gọn (bằng tiếng Việt, dùng Markdown) để giúp họ hiểu rõ lỗi sai và củng cố kiến thức.
+            - **Câu hỏi:** "${questionText}"
+            - **Câu trả lời sai của học sinh:** "${userAnswer}"
+            - **Đáp án đúng:** "${correctAnswer}"
+            
+            Bài học của bạn nên có:
+            1.  **Phân tích lỗi sai:** Giải thích tại sao câu trả lời của họ chưa đúng.
+            2.  **Giải thích khái niệm:** Giảng lại ngắn gọn về kiến thức cốt lõi.
+            3.  **Ví dụ minh họa:** Cung cấp 1-2 ví dụ khác để làm rõ.`;
+            try {
+                const result = await model.generateContent(prompt);
+                showTutorModal("Củng cố kiến thức", marked.parse(result.response.text()));
+            } catch(e) { showTutorModal("Lỗi", "Không thể kết nối với AI để tạo bài học."); }
+        }
+
+        async function requestExpansion(questionArgs) {
+            showTutorModal("Mở rộng kiến thức", '<div class="small-spinner"></div>');
+            const questionText = questionArgs.question || questionArgs.statement;
+            const prompt = `Bạn là một gia sư AI thân thiện. Một học sinh vừa trả lời ĐÚNG câu hỏi sau: "${questionText}". 
+            Hãy khen ngợi họ và cung cấp một mẩu kiến thức mở rộng ngắn gọn (bằng tiếng Việt, dùng Markdown) để giúp họ hiểu sâu hơn về chủ đề liên quan hoặc một ứng dụng thú vị của kiến thức đó.`;
+            try {
+                const result = await model.generateContent(prompt);
+                showTutorModal("Mở rộng kiến thức", marked.parse(result.response.text()));
+            } catch(e) { showTutorModal("Lỗi", "Không thể kết nối với AI để tạo bài học."); }
+        }
+
 
         responseContainer.addEventListener('click', async (event) => {
             const li = event.target.closest('li');
             if (!li) return;
             if (li.dataset.state === 'locked') { li.style.animation = 'shake 0.5s'; setTimeout(() => li.style.animation = '', 500); return; }
-            if (event.target.closest('.quiz-container') || event.target.classList.contains('retry-button')) return;
+            if (event.target.closest('.quiz-container') || event.target.closest('.feedback-actions') || event.target.classList.contains('retry-button')) return;
+            
             const wasActive = li.classList.contains('active');
             responseContainer.querySelectorAll('li').forEach(item => item.classList.remove('active'));
             if (!wasActive) {
@@ -361,13 +568,11 @@
                     await getLessonDetail(li.dataset.topic, detailEl);
                 }
             }
-            saveState(); // Lưu sau mỗi lần nhấp chuột (thay đổi active)
+            saveState();
         });
 
         generatePathButton.addEventListener("click", generateLearningPath);
 
-        // --- CÁC HÀM MỚI CHO VIỆC LƯU/TẢI TIẾN TRÌNH ---
-        
         async function generateWelcomeBackMessage(mainTopic, lastLessonTopic) {
             if (!model || !lastLessonTopic) return;
             const welcomeContainer = document.getElementById('welcomeMessage');
@@ -385,6 +590,24 @@
                 welcomeContainer.innerHTML = `<p>Chào mừng bạn đã quay trở lại! Hãy cùng tiếp tục học về <strong>${mainTopic}</strong> nhé.</p>`;
             }
         }
+        
+        function rehydrateQuizzes() {
+            responseContainer.querySelectorAll('.quiz-container').forEach(container => {
+                const type = container.dataset.quizType;
+                const argsJSON = container.dataset.quizArgs;
+                
+                const isAnswered = container.querySelector('button:disabled');
+
+                if (type && argsJSON && toolImplementations[type] && !isAnswered) {
+                    try {
+                        const args = JSON.parse(argsJSON);
+                        toolImplementations[type](args, container);
+                    } catch (e) {
+                        console.error("Lỗi khi rehydrate quiz:", e, container);
+                    }
+                }
+            });
+        }
 
         function loadState() {
             const savedStateJSON = localStorage.getItem(LS_KEY);
@@ -393,23 +616,26 @@
                     const savedState = JSON.parse(savedStateJSON);
                     topicInput.value = savedState.topic;
                     responseContainer.innerHTML = savedState.pathHTML;
-                    // Render lại KaTeX cho tất cả các nội dung đã tải
-                    responseContainer.querySelectorAll('.lesson-content, .quiz-container').forEach(el => {
+                    
+                    responseContainer.querySelectorAll('.lesson-content, .quiz-container, .quiz-feedback').forEach(el => {
                         renderKatexInElement(el);
                     });
+                    
+                    rehydrateQuizzes();
                     
                     const lastActiveLI = responseContainer.querySelector('li.active');
                     generateWelcomeBackMessage(savedState.topic, lastActiveLI?.dataset.topic);
                     updateStatus('success-text', 'Đã tải lại lộ trình học của bạn!');
                 } catch(e) {
                     console.error("Lỗi khi tải tiến trình:", e);
-                    localStorage.removeItem(LS_KEY); // Xóa dữ liệu hỏng
+                    localStorage.removeItem(LS_KEY); 
                 }
             }
         }
-
+        
         clearProgressButton.addEventListener('click', () => {
-            if (confirm('Bạn có chắc muốn xóa tất cả tiến trình đã lưu?')) {
+             const userConfirmed = window.confirm('Bạn có chắc muốn xóa tất cả tiến trình đã lưu?');
+            if (userConfirmed) {
                 localStorage.removeItem(LS_KEY);
                 topicInput.value = '';
                 responseContainer.innerHTML = 'Chưa có lộ trình nào được tạo...';
@@ -418,7 +644,6 @@
             }
         });
 
-        // Tải tiến trình khi trang được mở
         document.addEventListener('DOMContentLoaded', loadState);
 
     </script>
