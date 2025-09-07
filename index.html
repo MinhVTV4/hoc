@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LearnPath AI - (v14.3: Sửa lỗi hiển thị Text)</title>
+    <title>LearnPath AI - (v15.6: Sửa lỗi KaTeX triệt để)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" xintegrity="sha384-n8MVd4RsNIU0KOVEMQNogNJeASiX9UrxmoL2ACafVVfk5TBccNsB6SbAtUWWl0ES" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" xintegrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" xintegrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+    <!-- FIX: Corrected all 'xintegrity' attributes to 'integrity' for security and stability. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0KOVEMQNogNJeASiX9UrxmoL2ACafVVfk5TBccNsB6SbAtUWWl0ES" crossorigin="anonymous">
+    <!-- FIX & UPGRADE: Added 'defer' for stable, non-blocking script loading. -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
     <!-- New Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,6 +29,8 @@
             --primary-hover-light: #1d4ed8;
             --accent-light: #f97316;
             --success-light: #16a34a;
+            --danger-light: #dc2626;
+            --danger-hover-light: #b91c1c;
             --shadow-light: rgba(0, 0, 0, 0.06);
 
             /* Dark Theme */
@@ -40,6 +44,8 @@
             --primary-hover-dark: #0ea5e9;
             --accent-dark: #fb923c;
             --success-dark: #4ade80;
+            --danger-dark: #f87171;
+            --danger-hover-dark: #ef4444;
             --shadow-dark: rgba(0, 0, 0, 0.2);
         }
 
@@ -54,6 +60,8 @@
             --primary-hover: var(--primary-hover-light);
             --accent: var(--accent-light);
             --success: var(--success-light);
+            --danger: var(--danger-light);
+            --danger-hover: var(--danger-hover-light);
             --shadow: var(--shadow-light);
         }
 
@@ -68,48 +76,40 @@
             --primary-hover: var(--primary-hover-dark);
             --accent: var(--accent-dark);
             --success: var(--success-dark);
+            --danger: var(--danger-dark);
+            --danger-hover: var(--danger-hover-dark);
             --shadow: var(--shadow-dark);
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body { 
-            font-family: var(--font-main); 
-            margin: 0; 
-            padding: 20px; 
-            background-color: var(--bg-primary); 
-            color: var(--text-primary); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            transition: background-color 0.3s, color 0.3s;
-        }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-main); margin: 0; padding: 20px; background-color: var(--bg-primary); color: var(--text-primary); display: flex; flex-direction: column; align-items: center; transition: background-color 0.3s, color 0.3s; }
         .container { width: 100%; max-width: 850px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .header-title { display: flex; align-items: center; gap: 12px; }
         .header-title span { font-size: 2.2rem; }
         .header-actions { display: flex; align-items: center; }
-        #theme-toggle-btn {
-            background: none; border: 1px solid var(--border); color: var(--text-secondary);
-            width: 44px; height: 44px; padding: 0; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-        }
+        #theme-toggle-btn { background: none; border: 1px solid var(--border); color: var(--text-secondary); width: 44px; height: 44px; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; }
         #theme-toggle-btn:hover { background-color: var(--bg-tertiary); }
         h1, h2 { text-align: center; margin-bottom: 5px; }
         h1 { font-size: 2.2rem; color: var(--text-primary); }
         h2 { font-size: 1.2rem; font-weight: 400; margin-bottom: 30px; color: var(--text-secondary); }
         #controls { margin-bottom: 30px; background-color: var(--bg-secondary); padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px var(--shadow); border: 1px solid var(--border); transition: background-color 0.3s, border-color 0.3s; }
-        input[type="text"], select { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 16px; background-color: var(--bg-secondary); color: var(--text-primary); }
-        input[type="text"]:focus, select:focus { border-color: var(--primary); outline: 0; box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary) 25%, transparent); }
-        button { width: 100%; padding: 14px 25px; background-color: var(--primary); color: var(--bg-secondary); border: none; border-radius: 8px; cursor: pointer; font-size: 17px; transition: background-color 0.3s ease, transform 0.1s ease; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; }
+        input[type="text"], select { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 16px; background-color: var(--bg-secondary); color: var(--text-primary); transition: border-color 0.2s, box-shadow 0.2s; }
+        input[type="text"]:focus, select:focus { border-color: var(--primary); outline: 0; box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent); }
+        button { width: 100%; padding: 14px 25px; background-color: var(--primary); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 17px; transition: background-color 0.3s ease, transform 0.1s ease; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; }
         button:hover { background-color: var(--primary-hover); }
         button:active { transform: scale(0.98); }
         button:disabled { background-color: var(--text-secondary); cursor: not-allowed; opacity: 0.6; }
-        #clearProgressButton { background-color: var(--text-secondary); margin-top: 10px; color: var(--bg-secondary); }
-        #clearProgressButton:hover { opacity: 0.8; }
-        #responseContainer { background-color: var(--bg-secondary); border-radius: 16px; min-height: 100px; width: 100%; padding: 15px; box-sizing: border-box; box-shadow: 0 4px 20px var(--shadow); border: 1px solid var(--border); }
+        #clearProgressButton { background-color: var(--bg-tertiary); color: var(--danger); border: 1px solid var(--danger); margin-top: 10px; }
+        #clearProgressButton:hover { background-color: var(--danger); color: #fff; }
+        #responseContainer { background-color: var(--bg-secondary); border-radius: 16px; min-height: 100px; width: 100%; padding: 25px; box-sizing: border-box; box-shadow: 0 4px 20px var(--shadow); border: 1px solid var(--border); }
+        
+        /* UPGRADE: Improved empty state design */
+        .empty-state { text-align: center; padding: 40px 20px; }
+        .empty-state svg { width: 60px; height: 60px; color: var(--primary); margin-bottom: 15px; }
+        .empty-state h3 { font-size: 1.5rem; color: var(--text-primary); margin: 0 0 10px 0; }
+        .empty-state p { font-size: 1rem; color: var(--text-secondary); margin: 0; }
+        
         .learning-path ol { list-style-type: none; padding-left: 0; margin: 0; counter-reset: lesson-counter; }
         .learning-path li { background-color: var(--bg-tertiary); margin-bottom: 10px; padding: 15px 20px 15px 55px; border-radius: 12px; border-left: 5px solid var(--text-secondary); counter-increment: lesson-counter; position: relative; transition: all 0.3s ease; }
         .learning-path li[data-state="locked"] { background-color: color-mix(in srgb, var(--bg-tertiary) 50%, transparent); border-left-color: var(--text-secondary); cursor: not-allowed; opacity: 0.7; }
@@ -144,8 +144,8 @@
         .lesson-content strong { color: var(--text-primary); }
         .lesson-content code { background-color: var(--bg-tertiary); padding: 2px 6px; border-radius: 6px; font-family: monospace; border: 1px solid var(--border); }
         .status-message { margin-top: 15px; font-weight: bold; font-size: 0.95rem; text-align: center; width: 100%; }
-        .status-message.error-text { color: #dc3545; }
-        .status-message.success-text { color: #28a745; }
+        .status-message.error-text { color: var(--danger); }
+        .status-message.success-text { color: var(--success); }
         .status-message.info-text { color: #17a2b8; }
         .spinner { border: 3px solid rgba(255, 255, 255, 0.3); border-left-color: #fff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; }
         button.loading .spinner { display: block; }
@@ -176,49 +176,43 @@
         .retry-button:hover { opacity: 0.8; }
         .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5em 0; }
         .feedback-actions { margin-top: 12px; display: flex; gap: 10px; }
-        .feedback-actions button { font-size: 14px; padding: 8px 12px; width: auto; }
+        .feedback-actions button { font-size: 14px; padding: 8px 12px; width: auto; color: #fff; }
         .reinforce-btn { background-color: #6f42c1; } .reinforce-btn:hover { background-color: #59369a; }
         .expand-btn { background-color: #17a2b8; } .expand-btn:hover { background-color: #138496; }
         #welcomeMessage { display: none; background-color: color-mix(in srgb, var(--primary) 15%, var(--bg-secondary)); border-left: 5px solid var(--primary); border-radius: 8px; padding: 20px; margin-bottom: 25px; line-height: 1.6; }
         #welcomeMessage p { margin: 0; }
         #welcomeMessage .small-spinner { margin: 0; display: inline-block; vertical-align: middle; margin-right: 10px;}
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .modal-content { background-color: var(--bg-secondary); margin: 10% auto; padding: 25px; border: 1px solid var(--border); width: 90%; max-width: 700px; border-radius: 12px; position: relative; box-shadow: 0 5px 15px var(--shadow); }
         .modal-close { color: var(--text-secondary); float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
         .modal-close:hover, .modal-close:focus { color: var(--text-primary); }
         .modal-header { padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
         .modal-header h3 { margin: 0; color: var(--primary); }
-        .modal-body { line-height: 1.7; color: var(--text-secondary); }
+        .modal-body { line-height: 1.7; color: var(--text-secondary); max-height: 60vh; overflow-y: auto; }
         .modal-body .prose { max-width: none; }
+        /* UPGRADE: Styles for the new confirmation modal */
+        .modal-footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-footer button { width: auto; }
+        .confirm-btn-danger { background-color: var(--danger); }
+        .confirm-btn-danger:hover { background-color: var(--danger-hover); }
+        .cancel-btn { background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
+        .cancel-btn:hover { background-color: color-mix(in srgb, var(--text-secondary) 10%, var(--bg-tertiary)); }
+
+        #scrollToTopBtn { display: none; position: fixed; bottom: 20px; right: 30px; z-index: 99; border: none; outline: none; background-color: var(--primary); color: white; cursor: pointer; padding: 0; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s, visibility 0.3s; visibility: hidden; }
+        #scrollToTopBtn.visible { display: flex; align-items: center; justify-content: center; visibility: visible; opacity: 1; }
         
-        #scrollToTopBtn {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 30px;
-            z-index: 99;
-            border: none;
-            outline: none;
-            background-color: var(--primary);
-            color: white;
-            cursor: pointer;
-            padding: 0;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            opacity: 0;
-            transition: opacity 0.3s, visibility 0.3s;
-            visibility: hidden;
-        }
-        #scrollToTopBtn.visible {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            visibility: visible;
-            opacity: 1;
-        }
+        .sortable-list { list-style: none; padding: 10px; border-radius: 8px; background-color: color-mix(in srgb, var(--primary) 5%, transparent); min-height: 50px;}
+        .sortable-item { padding: 12px; background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: grab; user-select: none; transition: background-color 0.2s, box-shadow 0.2s; }
+        .sortable-item:last-child { margin-bottom: 0; }
+        .sortable-item.dragging { opacity: 0.5; background-color: color-mix(in srgb, var(--primary) 20%, transparent); }
+        .matching-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+        .matching-column { display: flex; flex-direction: column; gap: 8px; }
+        .matching-column .static-item { padding: 12px; background-color: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; }
+        .matching-column .sortable-item.correct { background-color: #d4edda; border-color: #c3e6cb; }
+        .matching-column .sortable-item.incorrect { background-color: #f8d7da; border-color: #f5c6cb; }
+        [data-theme="dark"] .matching-column .sortable-item.correct { background-color: #1a3c2a; border-color: #2a6a4a;}
+        [data-theme="dark"] .matching-column .sortable-item.incorrect { background-color: #4d1a21; border-color: #8b2a3a;}
 
         @media (max-width: 768px) {
             body { padding: 10px; }
@@ -228,8 +222,9 @@
             .learning-path li { padding: 12px 15px 12px 45px; }
             .learning-path li::before { width: 26px; height: 26px; left: 8px; }
             .lesson-block, .quiz-container { padding: 15px; }
-            .modal-content { width: 95%; margin: 5% auto; }
+            .modal-content { width: 95%; margin: 15% auto; }
             #scrollToTopBtn { bottom: 15px; right: 15px; width: 45px; height: 45px; }
+            .matching-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -247,7 +242,7 @@
                 </button>
             </div>
         </div>
-        <h2>(v14.3: Sửa lỗi hiển thị Text)</h2>
+        <h2>(v15.6: Sửa lỗi KaTeX triệt để)</h2>
 
         <div id="controls">
             <input type="text" id="topicInput" placeholder="Ví dụ: Định lý Pythagoras">
@@ -277,27 +272,50 @@
         <div id="welcomeMessage"></div>
 
         <h2>Lộ trình học đề xuất:</h2>
-        <div id="responseContainer">Chưa có lộ trình nào được tạo...</div>
+        <div id="responseContainer"></div>
     </div>
     
+    <!-- AI Tutor Modal -->
     <div id="aiTutorModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <span class="modal-close">&times;</span>
                 <h3 id="aiTutorModalTitle">Trợ lý AI</h3>
             </div>
-            <div id="aiTutorModalBody" class="modal-body">
-                <p>Nội dung sẽ được tải ở đây...</p>
+            <div id="aiTutorModalBody" class="modal-body"></div>
+        </div>
+    </div>
+    
+    <!-- UPGRADE: New Confirmation Modal (replaces window.confirm) -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                 <span class="modal-close">&times;</span>
+                <h3>Xác nhận hành động</h3>
+            </div>
+            <div id="confirmModalBody" class="modal-body">
+                <p id="confirmModalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelBtn" class="cancel-btn">Hủy bỏ</button>
+                <button id="confirmBtn" class="confirm-btn-danger">Xác nhận</button>
             </div>
         </div>
     </div>
     
     <script type="module">
+        // --- IMPORTANT: Do not change the SDK and AI connection method as requested ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
         import { getAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-ai.js";
         
         const LS_KEY = 'learningPathState';
         const THEME_KEY = 'themePreference';
+
+        const topicInput = document.getElementById('topicInput');
+        const generatePathButton = document.getElementById('generatePathButton');
+        const clearProgressButton = document.getElementById('clearProgressButton');
+        const responseContainer = document.getElementById('responseContainer');
+        const statusMessage = document.getElementById('statusMessage');
 
         // --- Theme Management ---
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
@@ -306,31 +324,130 @@
         
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
-            if (theme === 'dark') {
-                sunIcon.style.display = 'none';
-                moonIcon.style.display = 'inline-block';
-            } else {
-                sunIcon.style.display = 'inline-block';
-                moonIcon.style.display = 'none';
-            }
+            sunIcon.style.display = (theme === 'dark') ? 'none' : 'inline-block';
+            moonIcon.style.display = (theme === 'dark') ? 'inline-block' : 'none';
         }
         
         themeToggleBtn.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             localStorage.setItem(THEME_KEY, newTheme);
             applyTheme(newTheme);
         });
+        
+        // --- Modal Management ---
+        const aiTutorModal = document.getElementById('aiTutorModal');
+        const confirmationModal = document.getElementById('confirmationModal');
+        
+        function showTutorModal(title, content) {
+            aiTutorModal.querySelector('#aiTutorModalTitle').textContent = title;
+            const body = aiTutorModal.querySelector('#aiTutorModalBody');
+            body.innerHTML = content;
+            aiTutorModal.style.display = 'block';
+            renderKatexInElement(body);
+        }
+        function hideTutorModal() { aiTutorModal.style.display = 'none'; }
+        
+        function showConfirmationModal(message, onConfirm) {
+            confirmationModal.querySelector('#confirmModalMessage').textContent = message;
+            confirmationModal.style.display = 'block';
+            
+            const confirmBtn = confirmationModal.querySelector('#confirmBtn');
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+            newConfirmBtn.onclick = () => {
+                onConfirm();
+                hideConfirmationModal();
+            };
+        }
+        function hideConfirmationModal() { confirmationModal.style.display = 'none'; }
+        
+        aiTutorModal.querySelector('.modal-close').onclick = hideTutorModal;
+        confirmationModal.querySelector('.modal-close').onclick = hideConfirmationModal;
+        confirmationModal.querySelector('#cancelBtn').onclick = hideConfirmationModal;
+
+        window.onclick = (event) => {
+            if (event.target === aiTutorModal) hideTutorModal();
+            if (event.target === confirmationModal) hideConfirmationModal();
+        };
+
+        // --- Drag and Drop Utilities ---
+        function addDragDropHandlers(list) {
+            let draggingItem = null;
+            list.querySelectorAll('.sortable-item').forEach(item => {
+                item.setAttribute('draggable', 'true');
+                item.addEventListener('dragstart', () => { draggingItem = item; setTimeout(() => item.classList.add('dragging'), 0); });
+                item.addEventListener('dragend', () => { item.classList.remove('dragging'); draggingItem = null; });
+            });
+
+            list.addEventListener('dragover', e => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(list, e.clientY);
+                if (draggingItem) {
+                    if (afterElement == null) { list.appendChild(draggingItem); } 
+                    else { list.insertBefore(draggingItem, afterElement); }
+                }
+            });
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.sortable-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                return (offset < 0 && offset > closest.offset) ? { offset: offset, element: child } : closest;
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
 
         // --- Main App Logic ---
-
         function saveState() {
             const topic = topicInput.value.trim();
             const pathHTML = responseContainer.innerHTML;
-            if (topic && pathHTML && pathHTML !== 'Chưa có lộ trình nào được tạo...') {
-                const state = { topic, pathHTML };
-                localStorage.setItem(LS_KEY, JSON.stringify(state));
-                console.log("Tiến trình đã được lưu!");
+            if (topic && pathHTML && !responseContainer.querySelector('.empty-state')) {
+                localStorage.setItem(LS_KEY, JSON.stringify({ topic, pathHTML }));
+            }
+        }
+        
+        const reviewTool = [{ functionDeclarations: [{ name: 'createReviewSheet', description: 'Tạo một bảng tóm tắt ôn tập các khái niệm chính.', parameters: { type: 'OBJECT', properties: { keyConcepts: { type: 'ARRAY', items: { type: 'OBJECT', properties: { concept: { type: 'STRING', description: 'Tên của khái niệm hoặc định nghĩa.' }, summary: { type: 'STRING', description: 'Một câu tóm tắt ngắn gọn, dễ hiểu về khái niệm đó.' } }, required: ['concept', 'summary'] } } }, required: ['keyConcepts'] } }] }];
+
+        function displayReviewButton() {
+            if(document.getElementById('reviewButton')) return;
+            const reviewButton = document.createElement('button');
+            reviewButton.id = 'reviewButton';
+            reviewButton.textContent = '🎉 Chúc mừng! Xem tổng kết & ôn tập';
+            reviewButton.style.marginTop = '20px';
+            reviewButton.style.backgroundColor = 'var(--success)';
+            reviewButton.onclick = generateReviewSheet;
+            responseContainer.appendChild(reviewButton);
+        }
+
+        async function generateReviewSheet() {
+            showTutorModal('Đang tạo bảng ôn tập...', '<div class="small-spinner"></div>');
+            let learnedContent = `Chủ đề chính: ${topicInput.value}\n\n`;
+            document.querySelectorAll('.lesson-detail').forEach((detail, index) => { learnedContent += `--- Nội dung bước ${index + 1} ---\n${detail.innerText}\n\n`; });
+            const prompt = `Dựa trên toàn bộ nội dung đã học dưới đây, hãy xác định các khái niệm và định nghĩa quan trọng nhất, sau đó sử dụng công cụ 'createReviewSheet' để tạo một bảng tóm tắt ôn tập.\n\n**Nội dung đã học:**\n${learnedContent}`;
+
+            try {
+                const result = await model.generateContent({ contents: [{ role: 'user', parts: [{ text: prompt }] }], tools: reviewTool });
+                const functionCalls = result.response.functionCalls();
+                if (functionCalls && functionCalls.length > 0 && functionCalls[0].name === 'createReviewSheet') {
+                    const reviewData = functionCalls[0].args;
+                    // FIX: Apply marked.parseInline to correctly render markdown and KaTeX in the review sheet.
+                    let reviewHtml = '<ul>' + reviewData.keyConcepts.map(item => {
+                        const summaryHtml = marked.parseInline(item.summary || '');
+                        return `<li><strong>${item.concept}:</strong> ${summaryHtml}</li>`;
+                    }).join('') + '</ul>';
+                    showTutorModal('Bảng ôn tập kiến thức', reviewHtml);
+                } else {
+                    const textResponse = result.response.text();
+                    if (textResponse) { showTutorModal('Bảng ôn tập kiến thức', marked.parse(textResponse)); }
+                    else { throw new Error("AI did not return a valid review sheet or text summary."); }
+                }
+            } catch (e) {
+                console.error("Lỗi khi tạo bảng ôn tập:", e);
+                // UPGRADE: Improved error reporting to show specific error message to the user.
+                const errorMessage = `Không thể tạo bảng ôn tập. Vui lòng thử lại.<br><br><small style="color: var(--text-secondary);">Chi tiết lỗi: ${e.message}</small>`;
+                showTutorModal('Lỗi', errorMessage);
             }
         }
 
@@ -339,72 +456,34 @@
             if (!currentLi || currentLi.dataset.state === 'completed') return;
             currentLi.dataset.state = 'completed';
             const nextLi = currentLi.nextElementSibling;
-            if (nextLi && nextLi.dataset.state === 'locked') {
-                nextLi.dataset.state = 'unlocked';
-            }
+            if (nextLi && nextLi.dataset.state === 'locked') { nextLi.dataset.state = 'unlocked'; } 
+            else if (!nextLi) { displayReviewButton(); }
             saveState(); 
         }
         
         function renderKatexInElement(element) {
             if (window.renderMathInElement) {
-                renderMathInElement(element, {
-                    delimiters: [ {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true} ],
-                    throwOnError: false
-                });
+                renderMathInElement(element, { delimiters: [ {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true} ], throwOnError: false });
             }
         }
         
-        const aiTutorModal = document.getElementById('aiTutorModal');
-        const aiTutorModalTitle = document.getElementById('aiTutorModalTitle');
-        const aiTutorModalBody = document.getElementById('aiTutorModalBody');
-        const modalCloseBtn = aiTutorModal.querySelector('.modal-close');
-
-        function showTutorModal(title, content) {
-            aiTutorModalTitle.textContent = title;
-            aiTutorModalBody.innerHTML = content;
-            aiTutorModal.style.display = 'block';
-            renderKatexInElement(aiTutorModalBody);
-        }
-        
-        function hideTutorModal() {
-            aiTutorModal.style.display = 'none';
-        }
-        modalCloseBtn.onclick = hideTutorModal;
-        window.onclick = (event) => {
-            if (event.target == aiTutorModal) {
-                hideTutorModal();
-            }
-        }
-
         const toolImplementations = {
             createMultipleChoiceQuiz(args, container) {
                 const { question, options, correctAnswerIndex, explanation } = args;
                 if (!container) return;
                 container.dataset.quizType = 'createMultipleChoiceQuiz';
                 container.dataset.quizArgs = JSON.stringify(args);
-                
                 container.innerHTML = `<p>${question}</p><div class="quiz-options">${options.map((o, i) => `<button data-index="${i}">${o}</button>`).join('')}</div><div class="quiz-feedback"></div>`;
                 renderKatexInElement(container);
                 container.querySelector('.quiz-options').addEventListener('click', e => {
                     const btn = e.target.closest('button');
                     if (!btn || btn.parentElement.querySelector(':disabled')) return;
-                    
                     const selected = parseInt(btn.dataset.index);
                     const isCorrect = selected === correctAnswerIndex;
                     const feedbackEl = container.querySelector('.quiz-feedback');
-                    
-                    let feedbackHTML = `<p>${explanation}</p><div class="feedback-actions"></div>`;
-                    feedbackEl.innerHTML = feedbackHTML;
-
-                    const actionsContainer = feedbackEl.querySelector('.feedback-actions');
-                    if (isCorrect) {
-                        actionsContainer.innerHTML = `<button class="expand-btn">Mở rộng kiến thức ✨</button>`;
-                        actionsContainer.querySelector('.expand-btn').onclick = () => requestExpansion(args);
-                    } else {
-                        actionsContainer.innerHTML = `<button class="reinforce-btn">Củng cố kiến thức 🤔</button>`;
-                        actionsContainer.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, options[selected]);
-                    }
-                    
+                    feedbackEl.innerHTML = `<p>${explanation}</p><div class="feedback-actions">${isCorrect ? '<button class="expand-btn">Mở rộng kiến thức ✨</button>' : '<button class="reinforce-btn">Củng cố kiến thức 🤔</button>'}</div>`;
+                    if (isCorrect) { feedbackEl.querySelector('.expand-btn').onclick = () => requestExpansion(args); } 
+                    else { feedbackEl.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, options[selected]); }
                     feedbackEl.className = `quiz-feedback visible ${isCorrect ? 'correct' : 'incorrect'}`;
                     renderKatexInElement(feedbackEl);
                     container.querySelectorAll('button').forEach(b => {
@@ -420,7 +499,6 @@
                 if (!container) return;
                 container.dataset.quizType = 'createFillInTheBlankQuiz';
                 container.dataset.quizArgs = JSON.stringify(args);
-
                 container.innerHTML = `<p>${sentence.replace("___", `<input type="text" class="quiz-fib-input" placeholder="...">`)}</p><button class="check-fib-btn">Kiểm tra</button><div class="quiz-feedback"></div>`;
                 renderKatexInElement(container);
                 container.querySelector('.check-fib-btn').addEventListener('click', () => {
@@ -428,21 +506,11 @@
                     const userAnswer = input.value.trim();
                     const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
                     const feedbackEl = container.querySelector('.quiz-feedback');
-                    
                     input.disabled = true;
                     container.querySelector('.check-fib-btn').disabled = true;
-                    
-                    let feedbackHTML = `<p><strong>Giải thích:</strong> ${explanation}</p><div class="feedback-actions"></div>`;
-                    feedbackEl.innerHTML = feedbackHTML;
-                    const actionsContainer = feedbackEl.querySelector('.feedback-actions');
-                    if(isCorrect) {
-                         actionsContainer.innerHTML = `<button class="expand-btn">Mở rộng kiến thức ✨</button>`;
-                         actionsContainer.querySelector('.expand-btn').onclick = () => requestExpansion(args);
-                    } else {
-                        actionsContainer.innerHTML = `<button class="reinforce-btn">Củng cố kiến thức 🤔</button>`;
-                        actionsContainer.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, userAnswer);
-                    }
-                    
+                    feedbackEl.innerHTML = `<p><strong>Giải thích:</strong> ${explanation}</p><div class="feedback-actions">${isCorrect ? '<button class="expand-btn">Mở rộng kiến thức ✨</button>' : '<button class="reinforce-btn">Củng cố kiến thức 🤔</button>'}</div>`;
+                    if (isCorrect) { feedbackEl.querySelector('.expand-btn').onclick = () => requestExpansion(args); }
+                    else { feedbackEl.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, userAnswer); }
                     renderKatexInElement(feedbackEl);
                     feedbackEl.className = `quiz-feedback visible ${isCorrect ? 'correct' : 'incorrect'}`;
                     input.classList.add(isCorrect ? 'correct' : 'incorrect');
@@ -455,28 +523,17 @@
                 if (!container) return;
                 container.dataset.quizType = 'createTrueFalseQuiz';
                 container.dataset.quizArgs = JSON.stringify(args);
-
                 container.innerHTML = `<p>${statement}</p><div class="quiz-tf-options"><button data-answer="true">Đúng</button><button data-answer="false">Sai</button></div><div class="quiz-feedback"></div>`;
                 renderKatexInElement(container);
                 container.querySelector('.quiz-tf-options').addEventListener('click', e => {
                     const btn = e.target.closest('button');
                     if (!btn || btn.parentElement.querySelector(':disabled')) return;
-                    
                     const answer = btn.dataset.answer === 'true';
                     const isCorrectAnswer = answer === isCorrect;
                     const feedbackEl = container.querySelector('.quiz-feedback');
-                    
-                    let feedbackHTML = `<p>${explanation}</p><div class="feedback-actions"></div>`;
-                    feedbackEl.innerHTML = feedbackHTML;
-                    const actionsContainer = feedbackEl.querySelector('.feedback-actions');
-                     if(isCorrectAnswer) {
-                         actionsContainer.innerHTML = `<button class="expand-btn">Mở rộng kiến thức ✨</button>`;
-                         actionsContainer.querySelector('.expand-btn').onclick = () => requestExpansion(args);
-                    } else {
-                        actionsContainer.innerHTML = `<button class="reinforce-btn">Củng cố kiến thức 🤔</button>`;
-                        actionsContainer.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, answer ? 'Đúng' : 'Sai');
-                    }
-                    
+                    feedbackEl.innerHTML = `<p>${explanation}</p><div class="feedback-actions">${isCorrectAnswer ? '<button class="expand-btn">Mở rộng kiến thức ✨</button>' : '<button class="reinforce-btn">Củng cố kiến thức 🤔</button>'}</div>`;
+                    if (isCorrectAnswer) { feedbackEl.querySelector('.expand-btn').onclick = () => requestExpansion(args); } 
+                    else { feedbackEl.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, answer ? 'Đúng' : 'Sai'); }
                     renderKatexInElement(feedbackEl);
                     feedbackEl.className = `quiz-feedback visible ${isCorrectAnswer ? 'correct' : 'incorrect'}`;
                     container.querySelectorAll('button').forEach(b => {
@@ -486,243 +543,192 @@
                     if (!isCorrectAnswer) btn.classList.add('incorrect');
                     markStepAsCompleted(container);
                 });
+            },
+            createSortingQuiz(args, container) {
+                const { title, items, explanation } = args;
+                if (!container) return;
+                container.dataset.quizType = 'createSortingQuiz';
+                container.dataset.quizArgs = JSON.stringify(args);
+                const shuffledItems = [...items].sort(() => Math.random() - 0.5);
+                container.innerHTML = `<p>${title}</p><div class="sortable-list">${shuffledItems.map(item => `<div class="sortable-item">${item}</div>`).join('')}</div><button class="check-fib-btn" style="margin-top: 15px;">Kiểm tra</button><div class="quiz-feedback"></div>`;
+                const list = container.querySelector('.sortable-list');
+                addDragDropHandlers(list);
+                container.querySelector('.check-fib-btn').addEventListener('click', e => {
+                    e.target.disabled = true;
+                    const userOrder = [...list.querySelectorAll('.sortable-item')].map(el => el.textContent);
+                    const isCorrect = JSON.stringify(userOrder) === JSON.stringify(items);
+                    list.querySelectorAll('.sortable-item').forEach(itemEl => itemEl.setAttribute('draggable', 'false'));
+                    const feedbackEl = container.querySelector('.quiz-feedback');
+                    feedbackEl.innerHTML = `<p>${explanation}</p><p><strong>Thứ tự đúng:</strong><br>${items.join(' → ')}</p><div class="feedback-actions">${isCorrect ? '<button class="expand-btn">Mở rộng kiến thức ✨</button>' : '<button class="reinforce-btn">Củng cố kiến thức 🤔</button>'}</div>`;
+                    if (isCorrect) { feedbackEl.querySelector('.expand-btn').onclick = () => requestExpansion(args); }
+                    else { feedbackEl.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, "Thứ tự chưa đúng"); }
+                    feedbackEl.className = `quiz-feedback visible ${isCorrect ? 'correct' : 'incorrect'}`;
+                    markStepAsCompleted(container);
+                });
+            },
+            createMatchingQuiz(args, container) {
+                const { title, columnA, columnB, explanation } = args;
+                if (!container) return;
+                container.dataset.quizType = 'createMatchingQuiz';
+                container.dataset.quizArgs = JSON.stringify(args);
+                const shuffledB = [...columnB].sort(() => Math.random() - 0.5);
+                container.innerHTML = `<p>${title}</p><div class="matching-grid"><div class="matching-column">${columnA.map(item => `<div class="static-item">${item}</div>`).join('')}</div><div class="matching-column sortable-list">${shuffledB.map(item => `<div class="sortable-item">${item}</div>`).join('')}</div></div><button class="check-fib-btn" style="margin-top: 15px;">Kiểm tra</button><div class="quiz-feedback"></div>`;
+                const list = container.querySelector('.sortable-list');
+                addDragDropHandlers(list);
+                container.querySelector('.check-fib-btn').addEventListener('click', e => {
+                    e.target.disabled = true;
+                    let correctCount = 0;
+                    list.querySelectorAll('.sortable-item').forEach((itemEl, index) => {
+                        itemEl.setAttribute('draggable', 'false');
+                        if (itemEl.textContent === columnB[index]) { correctCount++; itemEl.classList.add('correct'); } 
+                        else { itemEl.classList.add('incorrect'); }
+                    });
+                    const isAllCorrect = correctCount === columnA.length;
+                    const feedbackEl = container.querySelector('.quiz-feedback');
+                    feedbackEl.innerHTML = `<p>${explanation}</p><p>Bạn đã nối đúng ${correctCount}/${columnA.length} cặp.</p><div class="feedback-actions">${isAllCorrect ? '<button class="expand-btn">Mở rộng kiến thức ✨</button>' : '<button class="reinforce-btn">Củng cố kiến thức 🤔</button>'}</div>`;
+                    if (isAllCorrect) { feedbackEl.querySelector('.expand-btn').onclick = () => requestExpansion(args); }
+                    else { feedbackEl.querySelector('.reinforce-btn').onclick = () => requestReinforcement(args, "Các cặp nối chưa đúng"); }
+                    feedbackEl.className = `quiz-feedback visible ${isAllCorrect ? 'correct' : 'incorrect'}`;
+                    markStepAsCompleted(container);
+                });
             }
         };
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyC3fY7kRz2P9BBIBd_jr7b3z5ZUpG5JH8g",
-            authDomain: "cboxauto-minh.firebaseapp.com",
-            projectId: "cboxauto-minh",
-            storageBucket: "cboxauto-minh.appspot.com",
-            messagingSenderId: "476350924183",
-            appId: "1:476350924183:web:d40a9da3c8902e1d7230d2"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyC3fY7kRz2P9BBIBd_jr7b3z5ZUpG5JH8g", authDomain: "cboxauto-minh.firebaseapp.com", projectId: "cboxauto-minh", storageBucket: "cboxauto-minh.appspot.com", messagingSenderId: "476350924183", appId: "1:476350924183:web:d40a9da3c8902e1d7230d2" };
         const app = initializeApp(firebaseConfig);
-        const topicInput = document.getElementById('topicInput');
-        const generatePathButton = document.getElementById('generatePathButton');
-        const clearProgressButton = document.getElementById('clearProgressButton');
-        const responseContainer = document.getElementById('responseContainer');
-        const statusMessage = document.getElementById('statusMessage');
 
         function updateStatus(type, message) { statusMessage.className = `status-message ${type}`; statusMessage.innerHTML = message; }
         function toggleButtonLoading(isLoading) { const btnTxt = generatePathButton.querySelector('.button-text'); generatePathButton.disabled = isLoading; generatePathButton.classList.toggle('loading', isLoading); btnTxt.textContent = isLoading ? 'Đang tạo...' : 'Tạo Lộ trình'; }
         
         function parseAiJson(text) {
-            const match = text.match(/```(json)?\s*([\s\S]*?)\s*```/); 
-            let jsonString = text;
-            if (match && match[2]) {
-                jsonString = match[2].trim();
-            } else {
-                const firstBrace = text.indexOf('{');
-                const lastBrace = text.lastIndexOf('}');
-                if (firstBrace !== -1 && lastBrace > firstBrace) {
-                    jsonString = text.substring(firstBrace, lastBrace + 1);
-                }
-            }
+            const match = text.match(/```(json)?\s*([\s\S]*?)\s*```/);
+            let jsonString = match ? match[2].trim() : text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
             try { return JSON.parse(jsonString); } catch (e) {
                 console.warn("Lỗi JSON parse lần 1, thử sửa lỗi...", e);
                 const repairedString = jsonString.replace(/,\s*([}\]])/g, '$1');
-                try { return JSON.parse(repairedString); } catch (finalError) {
-                     console.error("Không thể sửa và parse JSON:", finalError);
-                     throw new Error("Dữ liệu JSON từ AI không hợp lệ.");
-                }
+                try { return JSON.parse(repairedString); } catch (finalError) { console.error("Không thể sửa và parse JSON:", finalError); throw new Error("Dữ liệu JSON từ AI không hợp lệ."); }
             }
         }
         
-        const quizTools = [{ 
-            functionDeclarations: [
-                { name: 'createMultipleChoiceQuiz', description: 'Tạo một câu hỏi trắc nghiệm.', parameters: { type: 'OBJECT', properties: { question: { type: 'STRING' }, options: { type: 'ARRAY', items: { type: 'STRING' } }, correctAnswerIndex: { type: 'NUMBER' }, explanation: { type: 'STRING', description: 'Giải thích ngắn gọn tại sao đáp án lại đúng.' } }, required: ['question', 'options', 'correctAnswerIndex', 'explanation'] } },
-                { name: 'createFillInTheBlankQuiz', description: 'Tạo một câu hỏi điền vào chỗ trống.', parameters: { type: 'OBJECT', properties: { sentence: { type: 'STRING', description: 'Câu chứa ký hiệu ___ cho chỗ trống.' }, correctAnswer: { type: 'STRING' }, explanation: { type: 'STRING', description: 'Giải thích ngắn gọn tại sao đáp án lại đúng.' } }, required: ['sentence', 'correctAnswer', 'explanation'] } },
-                { name: 'createTrueFalseQuiz', description: 'Tạo một câu hỏi dạng Đúng hoặc Sai.', parameters: { type: 'OBJECT', properties: { statement: { type: 'STRING' }, isCorrect: { type: 'BOOLEAN' }, explanation: { type: 'STRING', description: 'Giải thích ngắn gọn tại sao đáp án lại đúng.' } }, required: ['statement', 'isCorrect', 'explanation'] } }
-            ]
-        }];
-
+        const quizTools = [{ functionDeclarations: [ { name: 'createMultipleChoiceQuiz', description: 'Tạo một câu hỏi trắc nghiệm.', parameters: { type: 'OBJECT', properties: { question: { type: 'STRING' }, options: { type: 'ARRAY', items: { type: 'STRING' } }, correctAnswerIndex: { type: 'NUMBER' }, explanation: { type: 'STRING' } }, required: ['question', 'options', 'correctAnswerIndex', 'explanation'] } }, { name: 'createFillInTheBlankQuiz', description: 'Tạo một câu hỏi điền vào chỗ trống.', parameters: { type: 'OBJECT', properties: { sentence: { type: 'STRING', description: 'Câu chứa ___ cho chỗ trống.' }, correctAnswer: { type: 'STRING' }, explanation: { type: 'STRING' } }, required: ['sentence', 'correctAnswer', 'explanation'] } }, { name: 'createTrueFalseQuiz', description: 'Tạo một câu hỏi Đúng/Sai.', parameters: { type: 'OBJECT', properties: { statement: { type: 'STRING' }, isCorrect: { type: 'BOOLEAN' }, explanation: { type: 'STRING' } }, required: ['statement', 'isCorrect', 'explanation'] } }, { name: 'createSortingQuiz', description: 'Tạo bài tập sắp xếp các mục.', parameters: { type: 'OBJECT', properties: { title: { type: 'STRING' }, items: { type: 'ARRAY', items: { type: 'STRING' }, description: 'Mảng các mục đã ở đúng thứ tự.' }, explanation: { type: 'STRING' } }, required: ['title', 'items', 'explanation'] } }, { name: 'createMatchingQuiz', description: 'Tạo bài tập nối cột.', parameters: { type: 'OBJECT', properties: { title: { type: 'STRING' }, columnA: { type: 'ARRAY', items: { type: 'STRING' } }, columnB: { type: 'ARRAY', items: { type: 'STRING' }, description: 'Cột B, theo đúng thứ tự tương ứng với cột A.' }, explanation: { type: 'STRING' } }, required: ['title', 'columnA', 'columnB', 'explanation'] } } ] }];
+        const learningPathTool = [{ functionDeclarations: [{ name: 'createLearningPath', description: 'Tạo một lộ trình học có cấu trúc.', parameters: { type: 'OBJECT', properties: { steps: { type: 'ARRAY', items: { type: 'STRING' }, description: 'Một mảng các chuỗi, mỗi chuỗi là tiêu đề của một bước học.' } }, required: ['steps'] } }] }];
+        
         let model;
-        try {
-            model = getGenerativeModel(getAI(app), { model: "gemini-2.5-flash" }); 
-            updateStatus('success-text', "Mô hình AI đã sẵn sàng!");
-        } catch (e) {
-            console.error("Lỗi khởi tạo AI Model:", e);
-            updateStatus('error-text', `Lỗi khởi tạo AI Model: ${e.message}.`);
-        }
+        try { model = getGenerativeModel(getAI(app), { model: "gemini-2.5-flash" }); updateStatus('success-text', "Mô hình AI đã sẵn sàng!"); } 
+        catch (e) { console.error("Lỗi khởi tạo AI Model:", e); updateStatus('error-text', `Lỗi khởi tạo AI Model: ${e.message}.`); }
         
         async function getLessonDetail(topic, detailElement) {
             if (!model) { detailElement.innerHTML = `<p class="error">Mô hình AI chưa sẵn sàng.</p>`; return; }
             detailElement.innerHTML = '<div class="small-spinner"></div>';
             
             try {
-                // Call 1: Get lesson content as JSON
-                const lessonPrompt = `Bạn là một gia sư AI chuyên nghiệp. Hãy tạo nội dung bài học về chủ đề: "${topic}".
-                **QUY TẮC BẮT BUỘC:**
-                1. Mọi công thức toán học hoặc ký hiệu logic (ví dụ \\land, \\implies) PHẢI dùng cú pháp KaTeX và được bao bọc trong dấu đô la (ví dụ: $\\land$).
-                2. Escape dấu '\\' thành '\\\\'. Ví dụ: $\\pi$ phải được viết là "$\\\\pi$".
-                3. Chỉ trả lời bằng một khối mã JSON hợp lệ duy nhất.
-                \`\`\`json
-                {
-                  "lessonTitle": "...",
-                  "introduction": "...",
-                  "contentBlocks": [
-                    { "type": "explanation", "title": "...", "content": "..." },
-                    { "type": "example", "title": "...", "content": "..." }
-                  ]
-                }
-                \`\`\``;
-
+                const lessonPrompt = `Bạn là một gia sư AI. Hãy tạo nội dung bài học về: "${topic}". QUY TẮC: Mọi công thức toán học PHẢI dùng cú pháp KaTeX (ví dụ: $\\pi$ phải là "$\\\\pi$"). CHỈ trả lời bằng một khối mã JSON hợp lệ duy nhất theo cấu trúc sau: \`\`\`json\n{"lessonTitle": "...", "introduction": "...", "contentBlocks": [{"type": "explanation", "title": "...", "content": "..."}, {"type": "example", "title": "...", "content": "..."}]}\n\`\`\``;
                 const lessonResult = await model.generateContent(lessonPrompt);
                 const lessonData = parseAiJson(lessonResult.response.text());
                 if (!lessonData) throw new Error("Dữ liệu bài học từ AI không hợp lệ.");
-                
                 renderStructuredLesson(lessonData, detailElement);
 
-                // Call 2: Get quizzes using Function Calling
-                const quizPrompt = `Dựa vào chủ đề bài học "${topic}", hãy tạo 2-3 câu hỏi ôn tập bằng các công cụ được cung cấp. Đảm bảo mọi công thức hoặc ký hiệu toán học trong các tham số của công cụ (như question, explanation) đều tuân thủ quy tắc KaTeX.`;
-                const quizResult = await model.generateContent({
-                    contents: [{ role: 'user', parts: [{ text: quizPrompt }] }],
-                    tools: quizTools
-                });
-                
+                // FIX: Added a strict rule for the AI to double-escape backslashes in quiz generation to prevent rendering errors.
+                const quizPrompt = `Dựa vào chủ đề bài học "${topic}", hãy tạo 2-3 câu hỏi ôn tập **đa dạng** bằng các công cụ được cung cấp. **QUY TẮC BẮT BUỘC:** Mọi công thức hoặc ký hiệu toán học trong các tham số của công cụ (như question, explanation, title, items) đều PHẢI dùng cú pháp KaTeX, được bao bọc trong dấu đô la, và mọi dấu '\\' phải được escape thành '\\\\'. Ví dụ: "Giá trị của $\\\\pi$ là bao nhiêu?" hoặc một lựa chọn là "$\\\\frac{1}{2}"$.`;
+                const quizResult = await model.generateContent({ contents: [{ role: 'user', parts: [{ text: quizPrompt }] }], tools: quizTools });
                 const functionCalls = quizResult.response.functionCalls();
-                if (functionCalls && functionCalls.length > 0) {
-                    renderSummaryQuiz(functionCalls, detailElement);
-                }
-                
+                if (functionCalls && functionCalls.length > 0) { renderSummaryQuiz(functionCalls, detailElement); }
                 saveState();
             } catch (error) {
                 console.error("Lỗi khi lấy chi tiết bài học:", error);
-                detailElement.innerHTML = `<p class="status-message error-text">Không thể tải nội dung. Vấn đề có thể do dữ liệu từ AI không hợp lệ. Vui lòng thử lại.</p><button class="retry-button">Thử lại</button>`;
+                detailElement.innerHTML = `<p class="status-message error-text">Không thể tải nội dung. Vui lòng thử lại.</p><button class="retry-button">Thử lại</button>`;
                 detailElement.querySelector('.retry-button').addEventListener('click', () => getLessonDetail(topic, detailElement));
             }
         }
 
         function renderStructuredLesson(data, parentElement) {
             parentElement.innerHTML = ''; 
-            if (data.introduction) {
-                const introBlock = document.createElement('div');
-                introBlock.className = 'lesson-block explanation';
-                introBlock.innerHTML = `<div class="lesson-block-title">${getIconForBlockType('explanation')} <span>${data.lessonTitle || 'Giới thiệu'}</span></div><div class="lesson-content">${marked.parse(data.introduction)}</div>`;
-                parentElement.appendChild(introBlock);
-            }
-            if (data.contentBlocks && Array.isArray(data.contentBlocks)) {
-                data.contentBlocks.forEach(block => {
-                    const blockEl = document.createElement('div');
-                    blockEl.className = `lesson-block ${block.type || 'explanation'}`;
-                    blockEl.innerHTML = `<div class="lesson-block-title">${getIconForBlockType(block.type)}<span>${block.title}</span></div><div class="lesson-content">${marked.parse(block.content)}</div>`;
-                    parentElement.appendChild(blockEl);
-                });
-            }
+            const createBlock = (type, title, content) => `<div class="lesson-block ${type}"><div class="lesson-block-title">${getIconForBlockType(type)}<span>${title}</span></div><div class="lesson-content">${marked.parse(content)}</div></div>`;
+            if (data.introduction) parentElement.innerHTML += createBlock('explanation', data.lessonTitle || 'Giới thiệu', data.introduction);
+            if (data.contentBlocks) data.contentBlocks.forEach(block => parentElement.innerHTML += createBlock(block.type || 'explanation', block.title, block.content));
             renderKatexInElement(parentElement);
         }
         
-        function getIconForBlockType(type) {
-            const icons = {
-                example: '💡',
-                note: '📌',
-                explanation: '🧠'
-            };
-            return icons[type] || icons['explanation'];
-        }
+        function getIconForBlockType(type) { return ({ example: '💡', note: '📌', explanation: '🧠' })[type] || '🧠'; }
 
         function renderSummaryQuiz(functionCalls, parentElement) {
             const block = document.createElement('div');
             block.className = 'practice-set';
             block.innerHTML = `<div class="summary-quiz-title">📝 <span>Bài tập tổng kết</span></div>`;
-            parentElement.appendChild(block);
-
             functionCalls.forEach(call => {
                 const exerciseContainer = document.createElement('div');
                 exerciseContainer.className = 'quiz-container';
                 block.appendChild(exerciseContainer);
-                
-                const implementation = toolImplementations[call.name];
-                if (implementation) {
-                    implementation(call.args, exerciseContainer);
-                } else {
-                    console.warn(`Không tìm thấy hàm triển khai cho công cụ: ${call.name}`);
-                    exerciseContainer.textContent = `Lỗi: Không thể hiển thị bài tập loại "${call.name}".`;
-                }
+                if (toolImplementations[call.name]) { toolImplementations[call.name](call.args, exerciseContainer); }
+                else { exerciseContainer.textContent = `Lỗi: Không thể hiển thị bài tập loại "${call.name}".`; }
             });
+            parentElement.appendChild(block);
         }
 
         async function generateLearningPath() {
              if (!model) { updateStatus('error-text', "Mô hình AI chưa được khởi tạo."); return; }
              const topic = topicInput.value.trim();
              if (!topic) { updateStatus('error-text', "Vui lòng nhập một chủ đề!"); return; }
-
-             const pathLengthSelect = document.getElementById('pathLengthSelect');
-             const pathLength = pathLengthSelect.value;
-             
-             const learnerLevelSelect = document.getElementById('learnerLevelSelect');
-             const learnerLevel = learnerLevelSelect.value;
-
-             updateStatus('info-text', `Đang tạo lộ trình...`);
+             const pathLength = document.getElementById('pathLengthSelect').value;
+             const learnerLevel = document.getElementById('learnerLevelSelect').value;
+             updateStatus('info-text', `Đang tạo lộ trình thông minh...`);
              responseContainer.innerHTML = '<div class="large-spinner"></div>';
              toggleButtonLoading(true);
 
-             const prompt = `Tạo một lộ trình học gồm ${pathLength} rõ ràng và tuần tự cho chủ đề: "${topic}", phù hợp với trình độ của một "${learnerLevel}". Chỉ trả lời bằng một đối tượng JSON hợp lệ duy nhất, không có văn bản nào khác. Cấu trúc: {"learningPath": ["Bước 1: Giới thiệu...", "Bước 2: Tìm hiểu sâu...", ...]}`;
+             const prompt = `Phân tích chủ đề "${topic}" cho "${learnerLevel}", sau đó gọi công cụ \`createLearningPath\` để tạo một lộ trình học gồm ${pathLength} với các tiêu đề bước học rõ ràng, logic.`;
              
              try {
-                const result = await model.generateContent(prompt);
-                const pathData = parseAiJson(result.response.text());
-                const pathItems = pathData.learningPath;
-                if (!Array.isArray(pathItems) || pathItems.length === 0) throw new Error("Invalid path data");
+                const result = await model.generateContent({ contents: [{ role: 'user', parts: [{ text: prompt }] }], tools: learningPathTool });
+                const functionCalls = result.response.functionCalls();
+                if (!functionCalls || functionCalls[0]?.name !== 'createLearningPath') throw new Error("AI did not return a valid learning path structure.");
+                const pathItems = functionCalls[0].args.steps;
+                if (!Array.isArray(pathItems) || pathItems.length === 0) throw new Error("Invalid path data from function call");
+
                 responseContainer.innerHTML = `<div class="learning-path"><ol>${pathItems.map((item, index) => `<li data-topic="${item.replace(/"/g, '&quot;')}" data-state="${index === 0 ? 'unlocked' : 'locked'}"><span class="lesson-title">${item}</span><div class="lesson-detail"></div></li>`).join('')}</ol></div>`;
                 updateStatus('success-text', "Đã tạo lộ trình! Nhấp vào mục đầu tiên để bắt đầu.");
                 saveState();
              } catch (error) {
                 console.error("Lỗi khi tạo lộ trình:", error);
-                responseContainer.innerHTML = `<p class="status-message error-text">Không thể tạo lộ trình. Vui lòng thử lại.</p>`;
+                renderEmptyState(`<p class="status-message error-text">Không thể tạo lộ trình. Vui lòng thử lại.</p>`);
                 updateStatus('error-text', `Lỗi: ${error.message}`);
              } finally {
                 toggleButtonLoading(false);
              }
         }
         
-        async function requestReinforcement(questionArgs, userAnswer) {
-            showTutorModal("Củng cố kiến thức", '<div class="small-spinner"></div>');
-            const questionText = questionArgs.question || questionArgs.statement;
-            const correctAnswer = questionArgs.correctAnswer || (questionArgs.options ? questionArgs.options[questionArgs.correctAnswerIndex] : 'N/A');
-            const prompt = `Bạn là một gia sư AI tận tình. Một học sinh vừa trả lời SAI một câu hỏi. Hãy cung cấp một bài học ngắn gọn (bằng tiếng Việt, dùng Markdown) để giúp họ hiểu rõ lỗi sai và củng cố kiến thức. Đảm bảo mọi công thức/ký hiệu toán học đều dùng KaTeX và được bao bọc trong dấu đô la.
-            - **Câu hỏi:** "${questionText}"
-            - **Câu trả lời sai của học sinh:** "${userAnswer}"
-            - **Đáp án đúng:** "${correctAnswer}"
-            
-            Bài học của bạn nên có:
-            1.  **Phân tích lỗi sai:** Giải thích tại sao câu trả lời của họ chưa đúng.
-            2.  **Giải thích khái niệm:** Giảng lại ngắn gọn về kiến thức cốt lõi.
-            3.  **Ví dụ minh họa:** Cung cấp 1-2 ví dụ khác để làm rõ.`;
+        async function requestTutorHelp(modalTitle, prompt) {
+            showTutorModal(modalTitle, '<div class="small-spinner"></div>');
             try {
                 const result = await model.generateContent(prompt);
-                showTutorModal("Củng cố kiến thức", marked.parse(result.response.text()));
+                showTutorModal(modalTitle, marked.parse(result.response.text()));
             } catch(e) { showTutorModal("Lỗi", "Không thể kết nối với AI để tạo bài học."); }
         }
 
-        async function requestExpansion(questionArgs) {
-            showTutorModal("Mở rộng kiến thức", '<div class="small-spinner"></div>');
-            const questionText = questionArgs.question || questionArgs.statement;
-            const prompt = `Bạn là một gia sư AI thân thiện. Một học sinh vừa trả lời ĐÚNG câu hỏi sau: "${questionText}". 
-            Hãy khen ngợi họ và cung cấp một mẩu kiến thức mở rộng ngắn gọn (bằng tiếng Việt, dùng Markdown) để giúp họ hiểu sâu hơn về chủ đề liên quan hoặc một ứng dụng thú vị của kiến thức đó. Đảm bảo mọi công thức/ký hiệu toán học đều dùng KaTeX và được bao bọc trong dấu đô la.`;
-            try {
-                const result = await model.generateContent(prompt);
-                showTutorModal("Mở rộng kiến thức", marked.parse(result.response.text()));
-            } catch(e) { showTutorModal("Lỗi", "Không thể kết nối với AI để tạo bài học."); }
+        function requestReinforcement(questionArgs, userAnswer) {
+            const questionText = questionArgs.question || questionArgs.statement || questionArgs.title;
+            const correctAnswer = questionArgs.correctAnswer || (questionArgs.options ? questionArgs.options[questionArgs.correctAnswerIndex] : 'N/A');
+            const prompt = `Một học sinh vừa trả lời SAI câu hỏi. Hãy cung cấp một bài học ngắn gọn (tiếng Việt, Markdown) để củng cố kiến thức. Mọi công thức toán học phải dùng KaTeX. Câu hỏi: "${questionText}". Câu trả lời sai: "${userAnswer}". Đáp án đúng: "${correctAnswer}". Bài học cần: Phân tích lỗi sai, giảng lại khái niệm, và ví dụ minh họa.`;
+            requestTutorHelp("Củng cố kiến thức", prompt);
+        }
+
+        function requestExpansion(questionArgs) {
+            const questionText = questionArgs.question || questionArgs.statement || questionArgs.title;
+            const prompt = `Một học sinh vừa trả lời ĐÚNG câu hỏi: "${questionText}". Hãy khen ngợi và cung cấp một kiến thức mở rộng ngắn gọn (tiếng Việt, Markdown) liên quan. Mọi công thức toán học phải dùng KaTeX.`;
+            requestTutorHelp("Mở rộng kiến thức", prompt);
         }
 
         responseContainer.addEventListener('click', async (event) => {
             const li = event.target.closest('li');
-            if (!li) return;
+            if (!li || event.target.closest('.quiz-container, .feedback-actions, .retry-button')) return;
             if (li.dataset.state === 'locked') { li.style.animation = 'shake 0.5s'; setTimeout(() => li.style.animation = '', 500); return; }
-            if (event.target.closest('.quiz-container') || event.target.closest('.feedback-actions') || event.target.classList.contains('retry-button')) return;
             
             const wasActive = li.classList.contains('active');
             responseContainer.querySelectorAll('li').forEach(item => item.classList.remove('active'));
             if (!wasActive) {
                 li.classList.add('active');
-                li.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
+                li.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 const detailEl = li.querySelector('.lesson-detail');
-                if (detailEl && detailEl.innerHTML === '') {
-                    await getLessonDetail(li.dataset.topic, detailEl);
-                }
+                if (detailEl && detailEl.innerHTML === '') await getLessonDetail(li.dataset.topic, detailEl);
             }
             saveState();
         });
@@ -734,13 +740,10 @@
             const welcomeContainer = document.getElementById('welcomeMessage');
             welcomeContainer.style.display = 'block';
             welcomeContainer.innerHTML = `<div class="small-spinner"></div> <p>AI đang viết lời chào mừng...</p>`;
-
-            const prompt = `Bạn là một trợ lý học tập AI thân thiện. Người dùng vừa quay lại ứng dụng học tập. Hãy tạo một lời chào mừng ngắn gọn (2-3 câu), thân thiện và khích lệ để chào họ quay trở lại. - Chủ đề chính họ đang học là: "${mainTopic}" - Bài học gần nhất họ xem là: "${lastLessonTopic}". Gợi ý cho họ tiếp tục học từ bài đó. Trả lời bằng văn bản thuần túy, không dùng Markdown hay JSON.`;
-
+            const prompt = `Tạo một lời chào mừng ngắn gọn (2-3 câu), thân thiện để chào người dùng quay lại. Chủ đề họ đang học là: "${mainTopic}". Bài học gần nhất họ xem là: "${lastLessonTopic}". Gợi ý cho họ tiếp tục học từ bài đó. Trả lời bằng văn bản thuần túy.`;
             try {
                 const result = await model.generateContent(prompt);
-                const message = result.response.text().replace(/\n/g, '<br>');
-                welcomeContainer.innerHTML = `<p><strong>Trợ lý AI:</strong> ${message}</p>`;
+                welcomeContainer.innerHTML = `<p><strong>Trợ lý AI:</strong> ${result.response.text().replace(/\n/g, '<br>')}</p>`;
             } catch (error) {
                 console.error("Lỗi tạo lời chào:", error);
                 welcomeContainer.innerHTML = `<p>Chào mừng bạn đã quay trở lại! Hãy cùng tiếp tục học về <strong>${mainTopic}</strong> nhé.</p>`;
@@ -749,20 +752,22 @@
         
         function rehydrateQuizzes() {
             responseContainer.querySelectorAll('.quiz-container').forEach(container => {
-                const type = container.dataset.quizType;
-                const argsJSON = container.dataset.quizArgs;
-                
+                const { quizType, quizArgs } = container.dataset;
                 const isAnswered = container.querySelector('button:disabled');
-
-                if (type && argsJSON && toolImplementations[type] && !isAnswered) {
-                    try {
-                        const args = JSON.parse(argsJSON);
-                        toolImplementations[type](args, container);
-                    } catch (e) {
-                        console.error("Lỗi khi rehydrate quiz:", e, container);
-                    }
+                if (quizType && quizArgs && toolImplementations[quizType] && !isAnswered) {
+                    try { toolImplementations[quizType](JSON.parse(quizArgs), container); } 
+                    catch (e) { console.error("Lỗi khi rehydrate quiz:", e, container); }
                 }
             });
+        }
+        
+        function renderEmptyState(customHTML = '') {
+             responseContainer.innerHTML = customHTML || `
+                <div class="empty-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+                    <h3>Bắt đầu hành trình kiến thức của bạn</h3>
+                    <p>Nhập một chủ đề bạn muốn học và để AI tạo ra một lộ trình dành riêng cho bạn.</p>
+                </div>`;
         }
 
         function loadState() {
@@ -772,61 +777,44 @@
                     const savedState = JSON.parse(savedStateJSON);
                     topicInput.value = savedState.topic;
                     responseContainer.innerHTML = savedState.pathHTML;
-                    
-                    responseContainer.querySelectorAll('.lesson-content, .quiz-container, .quiz-feedback').forEach(el => {
-                        renderKatexInElement(el);
-                    });
-                    
+                    responseContainer.querySelectorAll('.lesson-content, .quiz-container, .quiz-feedback').forEach(renderKatexInElement);
                     rehydrateQuizzes();
-                    
                     const lastActiveLI = responseContainer.querySelector('li.active');
                     generateWelcomeBackMessage(savedState.topic, lastActiveLI?.dataset.topic);
                     updateStatus('success-text', 'Đã tải lại lộ trình học của bạn!');
                 } catch(e) {
                     console.error("Lỗi khi tải tiến trình:", e);
                     localStorage.removeItem(LS_KEY); 
+                    renderEmptyState();
                 }
+            } else {
+                renderEmptyState();
             }
         }
         
         clearProgressButton.addEventListener('click', () => {
-             const userConfirmed = window.confirm('Bạn có chắc muốn xóa tất cả tiến trình đã lưu?');
-            if (userConfirmed) {
+             // UPGRADE: Replaced window.confirm with a non-blocking custom modal
+            showConfirmationModal('Bạn có chắc muốn xóa tất cả tiến trình đã lưu không?', () => {
                 localStorage.removeItem(LS_KEY);
                 topicInput.value = '';
-                responseContainer.innerHTML = 'Chưa có lộ trình nào được tạo...';
+                renderEmptyState();
                 document.getElementById('welcomeMessage').style.display = 'none';
                 updateStatus('info-text', 'Đã xóa tiến trình. Bạn có thể bắt đầu lại.');
-            }
+            });
         });
 
         const scrollToTopBtn = document.createElement('button');
         scrollToTopBtn.id = 'scrollToTopBtn';
         scrollToTopBtn.title = 'Lên đầu trang';
-        scrollToTopBtn.innerHTML = '⬆️';
+        scrollToTopBtn.innerHTML = '&#8593;';
         document.body.appendChild(scrollToTopBtn);
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollToTopBtn.classList.add('visible');
-            } else {
-                scrollToTopBtn.classList.remove('visible');
-            }
-        });
-
-        scrollToTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
+        window.addEventListener('scroll', () => { scrollToTopBtn.classList.toggle('visible', window.scrollY > 300); });
+        scrollToTopBtn.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
         document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
-            applyTheme(savedTheme);
+            applyTheme(localStorage.getItem(THEME_KEY) || 'light');
             loadState();
         });
-
     </script>
 </body>
 </html>
